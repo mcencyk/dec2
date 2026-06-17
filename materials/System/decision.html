@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deceris — Decyzja operacyjna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="decision.css">
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-label="Deceris">
+        <circle cx="16" cy="16" r="14" stroke="#4F98A3" stroke-width="2"/>
+        <path d="M10 20 Q16 8 22 20" stroke="#4F98A3" stroke-width="2" fill="none"/>
+        <circle cx="16" cy="15" r="2" fill="#4F98A3"/>
+      </svg>
+      <span class="logo-text">Deceris</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="monitor.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Monitor</span>
+      </a>
+      <a href="threats.html" class="nav-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Zagrożenia</span>
+        <span class="nav-badge" id="threat-count">3</span>
+      </a>
+      <a href="analysis.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span>Analiza</span>
+      </a>
+      <a href="history.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>Historia</span>
+      </a>
+      <a href="#" class="nav-item nav-disabled">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span>Źródła danych</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">PS</div>
+        <div class="user-meta">
+          <span class="user-name">Paweł S.</span>
+          <span class="user-role">Administrator</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-breadcrumb">
+          <a href="threats.html">← Zagrożenia</a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="threat-detail.html" class="breadcrumb-link">EVT-2026-04-003</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Decyzja</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-outline" id="btn-share">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Udostępnij
+        </button>
+        <button class="btn-primary" id="btn-pdf">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+          Pobierz PDF
+        </button>
+      </div>
+    </header>
+
+    <!-- SCROLLABLE CONTENT -->
+    <div class="decision-content">
+
+      <!-- ══ SECTION 0: DECISION HEADER ══ -->
+      <div class="decision-header-block">
+        <div class="decision-header-top">
+          <div class="decision-approved-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+            ZATWIERDZONA
+          </div>
+          <a href="threat-detail.html" class="decision-traceback-link">← Powrót do EVT-2026-04-003</a>
+        </div>
+        <h1 class="decision-main-title">Decyzja operacyjna EVT-2026-04-003</h1>
+        <div class="decision-header-meta">
+          <span class="dmeta-item">
+            <span class="dmeta-label">Podstawa:</span>
+            <span class="dmeta-value">Wariant A</span>
+          </span>
+          <span class="dmeta-sep">·</span>
+          <span class="dmeta-item">
+            <span class="dmeta-label">Zatwierdził:</span>
+            <span class="dmeta-value">Marek W. <span class="dmeta-role">(Decydent)</span></span>
+          </span>
+          <span class="dmeta-sep">·</span>
+          <span class="dmeta-item dmeta-timestamp">2026-04-07 15:45 CEST</span>
+        </div>
+      </div>
+
+      <!-- ══ SECTION 1: BASIS OF DECISION ══ -->
+      <div class="section-block">
+        <h2 class="doc-section-heading">Podstawa decyzji</h2>
+        <div class="basis-card">
+          <div class="basis-card-title">Scenariusz A — precipitation +20% — scenariusz wybrany do decyzji</div>
+          <div class="basis-comparison">
+            <!-- Base column -->
+            <div class="basis-col basis-col-base">
+              <div class="basis-col-header">
+                <span class="basis-col-label">BAZOWY</span>
+              </div>
+              <div class="basis-metrics">
+                <div class="basis-metric">
+                  <span class="basis-metric-name">Strefa zalewowa</span>
+                  <span class="basis-metric-value">2.4 km²</span>
+                </div>
+                <div class="basis-metric">
+                  <span class="basis-metric-name">Budynki</span>
+                  <span class="basis-metric-value">47</span>
+                </div>
+                <div class="basis-metric">
+                  <span class="basis-metric-name">Szac. koszty</span>
+                  <span class="basis-metric-value">12–18M PLN</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="basis-divider">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+            </div>
+
+            <!-- Variant A column -->
+            <div class="basis-col basis-col-selected">
+              <div class="basis-col-header">
+                <span class="basis-col-label basis-col-label-selected">WARIANT A</span>
+                <span class="basis-selected-tag">← wybrano</span>
+              </div>
+              <div class="basis-metrics">
+                <div class="basis-metric">
+                  <span class="basis-metric-name">Strefa zalewowa</span>
+                  <span class="basis-metric-value">3.1 km²
+                    <span class="basis-delta delta-up">+0.7↑</span>
+                  </span>
+                </div>
+                <div class="basis-metric">
+                  <span class="basis-metric-name">Budynki</span>
+                  <span class="basis-metric-value">63
+                    <span class="basis-delta delta-up">+16↑</span>
+                  </span>
+                </div>
+                <div class="basis-metric">
+                  <span class="basis-metric-name">Szac. koszty</span>
+                  <span class="basis-metric-value">16–24M PLN
+                    <span class="basis-delta delta-up">+33%↑</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMPACT CATEGORIES BREAKDOWN (Prawo Wodne art. 169) -->
+        <div class="impact-detail-section">
+          <div class="impact-detail-title">Analiza wpływu dla Wariantu A (Prawo Wodne art. 169 / Dyrektywa 2007/60/WE)</div>
+          <div class="impact-detail-grid">
+
+            <div class="impact-detail-group">
+              <div class="impact-detail-group-label">Ludność i budynki</div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">👤</span>
+                <span class="idr-label">Mieszkańcy w strefie</span>
+                <span class="idr-base">890 os.</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">1 131 os. <span class="idr-delta">+241</span></span>
+              </div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">🏠</span>
+                <span class="idr-label">Budynki mieszkalne</span>
+                <span class="idr-base">38</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">48 <span class="idr-delta">+10</span></span>
+              </div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">🏫</span>
+                <span class="idr-label">Użyteczność publiczna</span>
+                <span class="idr-base">6</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">7 <span class="idr-delta">+1</span></span>
+              </div>
+              <div class="impact-detail-sub">szkoły: 3 · szpital: 1 · urzędy: 3</div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">🏛</span>
+                <span class="idr-label">Dziedzictwo kulturowe</span>
+                <span class="idr-base">1</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val">1 <span class="idr-delta idr-neutral">=</span></span>
+              </div>
+            </div>
+
+            <div class="impact-detail-group">
+              <div class="impact-detail-group-label">Infrastruktura</div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">🛣</span>
+                <span class="idr-label">Drogi publiczne</span>
+                <span class="idr-base">3.2 km</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">4.1 km <span class="idr-delta">+0.9</span></span>
+              </div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">🚂</span>
+                <span class="idr-label">Linie kolejowe</span>
+                <span class="idr-base">0.8 km</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">1 km <span class="idr-delta">+0.2</span></span>
+              </div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">💧</span>
+                <span class="idr-label">Ujęcia wody pitnej</span>
+                <span class="idr-base">1</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val">1 <span class="idr-delta idr-neutral">=</span></span>
+              </div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">⚡</span>
+                <span class="idr-label">Infrastruktura krytyczna</span>
+                <span class="idr-base">2</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">3 <span class="idr-delta">+1</span></span>
+              </div>
+            </div>
+
+            <div class="impact-detail-group">
+              <div class="impact-detail-group-label">Środowisko / regulacje</div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">🏭</span>
+                <span class="idr-label">Instalacje IPPC/Seveso</span>
+                <span class="idr-base">2</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">3 <span class="idr-delta">+1</span></span>
+              </div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">🌿</span>
+                <span class="idr-label">Obszary Natura 2000</span>
+                <span class="idr-base">12 ha</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">15 ha <span class="idr-delta">+3</span></span>
+              </div>
+              <div class="impact-detail-group-label" style="margin-top:12px">Koszty szacunkowe</div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">💰</span>
+                <span class="idr-label">Straty bezpośrednie</span>
+                <span class="idr-base">12–18M PLN</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">15–23M PLN</span>
+              </div>
+              <div class="impact-detail-row">
+                <span class="idr-icon">📊</span>
+                <span class="idr-label">Straty pośrednie</span>
+                <span class="idr-base">4–8M PLN</span>
+                <span class="idr-arrow">→</span>
+                <span class="idr-val idr-worse">5–10M PLN</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SECTION 1b: SCENARIOS CONSIDERED ══ -->
+      <div class="section-block">
+        <h2 class="doc-section-heading">Scenariusze rozważane</h2>
+        <div class="scenarios-table-wrap">
+          <table class="scenarios-table">
+            <thead>
+              <tr>
+                <th>Scenariusz</th>
+                <th>Parametry</th>
+                <th>Strefa</th>
+                <th>Budynki</th>
+                <th>Koszt (rozp.)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="sc-dot" style="background:#4F98A3"></span> Bazowy</td>
+                <td class="sc-params">auto-wyliczony · co godzinę</td>
+                <td class="mono">2.4 km²</td>
+                <td class="mono">47</td>
+                <td class="mono">12–18M PLN</td>
+                <td><span class="sc-status sc-status-ref">REFERENCJA</span></td>
+              </tr>
+              <tr class="sc-selected-row">
+                <td><span class="sc-dot" style="background:#EAB945"></span> Wariant A</td>
+                <td class="sc-params">precipitation_pct: <strong>+20%</strong></td>
+                <td class="mono sc-worse">3.1 km² <span class="sc-delta">+27%</span></td>
+                <td class="mono sc-worse">63 <span class="sc-delta">+16</span></td>
+                <td class="mono sc-worse">15–23M PLN</td>
+                <td><span class="sc-status sc-status-selected">✓ WYBRANY</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="scenarios-table-note">Uzasadnienie wyboru: Wariant A odzwierciedla prognozę IMGW (opad +18–22% vs norma wieloletnia). Scenariusz bazowy niedoszacowuje zasięgu przy aktualnych warunkach atmosferycznych.</div>
+        </div>
+      </div>
+
+      <!-- ══ SECTION 2: PIPELINE RECOMMENDATIONS ══ -->
+      <div class="section-block">
+        <h2 class="doc-section-heading">Rekomendacje pipeline</h2>
+        <div class="pipeline-list">
+
+          <div class="pipeline-rule pipeline-rule-l3">
+            <div class="pipeline-rule-icon">🏠</div>
+            <div class="pipeline-rule-body">
+              <div class="pipeline-rule-name">Budynki mieszkalne ≥ 50</div>
+              <div class="pipeline-rule-meta">
+                <span class="pipeline-threshold">próg: 50</span>
+                <span class="pipeline-triggered">wartość: <strong>63</strong> ≥ 50 ✓</span>
+              </div>
+            </div>
+            <div class="pipeline-rule-action">
+              <span class="pipeline-action-label">Zarządź ewakuację</span>
+            </div>
+          </div>
+
+          <div class="pipeline-rule pipeline-rule-l2">
+            <div class="pipeline-rule-icon">🚧</div>
+            <div class="pipeline-rule-body">
+              <div class="pipeline-rule-name">Drogi przecinają strefę zagrożenia</div>
+              <div class="pipeline-rule-meta">
+                <span class="pipeline-threshold">próg: obecność</span>
+                <span class="pipeline-triggered">wartość: <strong>DK8, ul. Nadrzeczna</strong></span>
+              </div>
+            </div>
+            <div class="pipeline-rule-action">
+              <span class="pipeline-action-label">Zamknij drogi</span>
+            </div>
+          </div>
+
+          <div class="pipeline-rule pipeline-rule-l3">
+            <div class="pipeline-rule-icon">⚡</div>
+            <div class="pipeline-rule-body">
+              <div class="pipeline-rule-name">Infra krytyczna w zasięgu</div>
+              <div class="pipeline-rule-meta">
+                <span class="pipeline-threshold">próg: ≥ 1 obiekt</span>
+                <span class="pipeline-triggered">wartość: <strong>3 obiekty</strong> ≥ 1 ✓</span>
+              </div>
+            </div>
+            <div class="pipeline-rule-action">
+              <span class="pipeline-action-label">Alert instytucje</span>
+            </div>
+          </div>
+
+          <div class="pipeline-rule pipeline-rule-l1">
+            <div class="pipeline-rule-icon">🌊</div>
+            <div class="pipeline-rule-body">
+              <div class="pipeline-rule-name">Wały w strefie zagrożenia</div>
+              <div class="pipeline-rule-meta">
+                <span class="pipeline-threshold">próg: obecność</span>
+                <span class="pipeline-triggered">wartość: <strong>km 12.3–12.8</strong></span>
+              </div>
+            </div>
+            <div class="pipeline-rule-action">
+              <span class="pipeline-action-label">Worki z piaskiem</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══ SECTION 3: OPERATIONAL TASKS ══ -->
+      <div class="section-block">
+        <h2 class="doc-section-heading">Zadania operacyjne <span class="doc-section-count">· 4 zadania</span></h2>
+        <div class="task-list">
+          <!-- Task 1 -->
+          <div class="task-card task-card-p1">
+            <div class="task-header">
+              <span class="task-icon">🚨</span>
+              <span class="task-name">Zarządź ewakuację</span>
+              <span class="task-priority task-priority-1">PRIORYTET 1</span>
+            </div>
+            <div class="task-detail">
+              <div class="task-detail-row">Obszar: ul. Rzeczna, Nadrzeczna, Przybrzeżna · ~120 osób</div>
+              <div class="task-detail-row">Termin: natychmiast</div>
+              <div class="task-detail-row"><span class="label">Geometria:</span> poligon strefy ewakuacji</div>
+            </div>
+          </div>
+
+          <!-- Task 2 -->
+          <div class="task-card task-card-p2">
+            <div class="task-header">
+              <span class="task-icon">🚧</span>
+              <span class="task-name">Zamknij drogi</span>
+              <span class="task-priority task-priority-2">PRIORYTET 2</span>
+            </div>
+            <div class="task-detail">
+              <div class="task-detail-row">DK8 km 12.3–14.7 od T+36h · ul. Nadrzeczna od T+24h</div>
+            </div>
+          </div>
+
+          <!-- Task 3 -->
+          <div class="task-card task-card-p2">
+            <div class="task-header">
+              <span class="task-icon">🏗</span>
+              <span class="task-name">Rozłóż worki z piaskiem</span>
+              <span class="task-priority task-priority-2">PRIORYTET 2</span>
+            </div>
+            <div class="task-detail">
+              <div class="task-detail-row">Odcinek wału km 12.3–12.8 · ~340 szt. (350m × 1 worek/mb)</div>
+              <div class="task-detail-row"><span class="label">Geometria:</span> linia wału</div>
+            </div>
+          </div>
+
+          <!-- Task 4 -->
+          <div class="task-card task-card-p3">
+            <div class="task-header">
+              <span class="task-icon">⚡</span>
+              <span class="task-name">Zabezpiecz infrastrukturę krytyczną</span>
+              <span class="task-priority task-priority-3">PRIORYTET 3</span>
+            </div>
+            <div class="task-detail">
+              <div class="task-detail-row">Stacja pomp Kłodzko-Południe — zagrożona od T+36h</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SECTION 4: DECISION MAP ══ -->
+      <div class="section-block">
+        <h2 class="doc-section-heading">Mapa decyzji</h2>
+        <div class="decision-map-wrap">
+          <canvas id="decision-map-canvas"></canvas>
+          <div class="decision-map-legend">
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:#4F98A3; opacity:0.7;"></span>
+              Bazowy
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:#EAB945; opacity:0.7; border: 1.5px dashed #EAB945;"></span>
+              Wariant A (wybrany)
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background: linear-gradient(135deg, #4F98A344, #D9505044);"></span>
+              Strefa zalewowa
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background: #D9505033; border: 1.5px dashed #D95050;"></span>
+              Strefa ewakuacji
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch-line" style="background: #E08644;"></span>
+              Zamknięte drogi
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch-dashed" style="border-color: #EAB945;"></span>
+              Linia worków
+            </div>
+            <div class="legend-item">
+              <span style="color: #D95050; font-size: 14px; flex-shrink:0;">⚡</span>
+              Infrastruktura krytyczna
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SECTION 5: TECHNICAL DATA ══ -->
+      <div class="section-block">
+        <h2 class="doc-section-heading">Dane techniczne</h2>
+        <div class="tech-grid">
+          <div class="tech-panel">
+            <div class="tech-panel-title">Parametry zdarzenia</div>
+            <div class="tech-row">
+              <span class="tech-label">Threat</span>
+              <span class="tech-value mono">EVT-2026-04-003 · Flood Risk</span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Severity</span>
+              <span class="tech-value"><span class="severity-badge severity-l3" style="font-size:11px; padding:2px 8px;">flood (L3)</span></span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Pipeline</span>
+              <span class="tech-value mono">uruchomiony 2026-04-07 08:00</span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Scenariusz</span>
+              <span class="tech-value mono">precipitation_pct: +20%</span>
+            </div>
+          </div>
+          <div class="tech-panel">
+            <div class="tech-panel-title">Odczyty wodowskazów</div>
+            <div class="tech-row">
+              <span class="tech-label">Kłodzko km 34.2</span>
+              <span class="tech-value">
+                <span class="gauge-badge gauge-badge-flood">212 cm <span class="gauge-arrow">↑</span></span>
+              </span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Bardo km 52.7</span>
+              <span class="tech-value">
+                <span class="gauge-badge gauge-badge-flood">195 cm <span class="gauge-arrow">↑</span></span>
+              </span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Bystrzyca km 12.4</span>
+              <span class="tech-value">
+                <span class="gauge-badge gauge-badge-warning">156 cm <span class="gauge-arrow">→</span></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SECTION 6: SIGNATURE ══ -->
+      <div class="section-block section-block-last">
+        <h2 class="doc-section-heading">Podpis elektroniczny</h2>
+        <div class="signature-block">
+          <div class="sig-verified-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+          </div>
+          <div class="sig-row-inner">
+            <div class="sig-avatar">MW</div>
+            <div class="sig-info">
+              <span class="sig-name">Marek Wiśniewski</span>
+              <span class="sig-role">Decydent · 2026-04-07 15:45:22 CEST</span>
+              <span class="sig-hash">e7c4a1b9f3d2e8c6a5b0f4d9e3c7b2a1f8d5e6c9</span>
+            </div>
+          </div>
+          <div class="sig-status">
+            <span class="sig-status-text">Podpis zweryfikowany</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /decision-content -->
+  </main>
+
+  <!-- PDF EXPORT OVERLAY -->
+  <div class="pdf-overlay" id="pdf-overlay">
+    <div class="pdf-card">
+      <div class="pdf-spinner" id="pdf-spinner"></div>
+      <div class="pdf-title">Generowanie PDF</div>
+      <ul class="pdf-steps" id="pdf-steps">
+        <li class="pdf-step" data-step="0">
+          <span class="pdf-step-icon">○</span>
+          Renderowanie mapy...
+        </li>
+        <li class="pdf-step" data-step="1">
+          <span class="pdf-step-icon">○</span>
+          Eksport zadań...
+        </li>
+        <li class="pdf-step" data-step="2">
+          <span class="pdf-step-icon">○</span>
+          Kompilacja PDF...
+        </li>
+        <li class="pdf-step" data-step="3">
+          <span class="pdf-step-icon">○</span>
+          Gotowe
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+  // ═══════════════════════════════════════
+  // DECISION MAP — Canvas rendering
+  // ═══════════════════════════════════════
+  (function() {
+    const canvas = document.getElementById('decision-map-canvas');
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    }
+
+    function draw() {
+      const W = canvas.width / dpr;
+      const H = canvas.height / dpr;
+
+      // Background
+      ctx.fillStyle = '#0f1018';
+      ctx.fillRect(0, 0, W, H);
+
+      // Subtle grid
+      ctx.strokeStyle = '#1a1b26';
+      ctx.lineWidth = 0.5;
+      for (let x = 0; x < W; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
+      for (let y = 0; y < H; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+
+      // ── Coordinate mapping helpers ──
+      const cx = W * 0.50;
+      const cy = H * 0.48;
+
+      // ── Wariant A overlay (amber, larger zone, dashed border) ──
+      const variantFactor = 1.27; // 3.1 km² / 2.4 km² ≈ +27%
+      const variantZone = [
+        [cx - 220, cy - 60],
+        [cx - 160, cy - 100],
+        [cx - 60, cy - 120],
+        [cx + 80, cy - 110],
+        [cx + 180, cy - 70],
+        [cx + 240, cy - 20],
+        [cx + 260, cy + 40],
+        [cx + 230, cy + 100],
+        [cx + 160, cy + 130],
+        [cx + 40, cy + 140],
+        [cx - 100, cy + 120],
+        [cx - 200, cy + 80],
+        [cx - 240, cy + 20],
+      ].map(([x, y]) => [cx + (x - cx) * variantFactor, cy + (y - cy) * variantFactor]);
+
+      ctx.beginPath();
+      ctx.moveTo(variantZone[0][0], variantZone[0][1]);
+      for (let i = 1; i < variantZone.length; i++) ctx.lineTo(variantZone[i][0], variantZone[i][1]);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(234, 185, 69, 0.10)';
+      ctx.fill();
+      ctx.setLineDash([6, 4]);
+      ctx.strokeStyle = 'rgba(234, 185, 69, 0.55)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Variant A label
+      ctx.font = 'bold 10px JetBrains Mono, monospace';
+      ctx.fillStyle = '#EAB945';
+      ctx.textAlign = 'left';
+      ctx.fillText('WA: 3.1 km²', cx - 240 * variantFactor + 6, cy - 60 * variantFactor - 6);
+
+      // ── Flood exposure zone (teal→red gradient polygon, opacity 0.3) ──
+      const floodZone = [
+        [cx - 220, cy - 60],
+        [cx - 160, cy - 100],
+        [cx - 60, cy - 120],
+        [cx + 80, cy - 110],
+        [cx + 180, cy - 70],
+        [cx + 240, cy - 20],
+        [cx + 260, cy + 40],
+        [cx + 230, cy + 100],
+        [cx + 160, cy + 130],
+        [cx + 40, cy + 140],
+        [cx - 100, cy + 120],
+        [cx - 200, cy + 80],
+        [cx - 240, cy + 20],
+      ];
+
+      const floodGrad = ctx.createLinearGradient(cx - 240, cy, cx + 260, cy);
+      floodGrad.addColorStop(0, 'rgba(79, 152, 163, 0.25)');
+      floodGrad.addColorStop(0.5, 'rgba(180, 100, 100, 0.22)');
+      floodGrad.addColorStop(1, 'rgba(217, 80, 80, 0.28)');
+
+      ctx.beginPath();
+      ctx.moveTo(floodZone[0][0], floodZone[0][1]);
+      for (let i = 1; i < floodZone.length; i++) ctx.lineTo(floodZone[i][0], floodZone[i][1]);
+      ctx.closePath();
+      ctx.fillStyle = floodGrad;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(79, 152, 163, 0.15)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // ── Evacuation zone (red dashed polygon) ──
+      const evacZone = [
+        [cx - 80, cy + 10],
+        [cx - 40, cy - 30],
+        [cx + 40, cy - 35],
+        [cx + 80, cy - 10],
+        [cx + 70, cy + 50],
+        [cx + 10, cy + 70],
+        [cx - 60, cy + 55],
+      ];
+
+      ctx.beginPath();
+      ctx.moveTo(evacZone[0][0], evacZone[0][1]);
+      for (let i = 1; i < evacZone.length; i++) ctx.lineTo(evacZone[i][0], evacZone[i][1]);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(217, 80, 80, 0.12)';
+      ctx.fill();
+      ctx.setLineDash([8, 5]);
+      ctx.strokeStyle = 'rgba(217, 80, 80, 0.7)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Evacuation label
+      const evacCx = cx + 0;
+      const evacCy = cy + 18;
+      ctx.font = '600 11px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const evacTxt = 'EWAKUACJA ~120 osób';
+      const evacTW = ctx.measureText(evacTxt).width + 16;
+      ctx.fillStyle = 'rgba(217, 80, 80, 0.75)';
+      roundRect(ctx, evacCx - evacTW / 2, evacCy - 10, evacTW, 20, 4);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.fillText(evacTxt, evacCx, evacCy);
+
+      // ── River Nysa Kłodzka (teal path) ──
+      ctx.beginPath();
+      ctx.moveTo(W * 0.05, H * 0.25);
+      ctx.bezierCurveTo(W * 0.18, H * 0.18, W * 0.28, H * 0.35, W * 0.38, H * 0.30);
+      ctx.bezierCurveTo(W * 0.48, H * 0.25, W * 0.55, H * 0.50, W * 0.62, H * 0.48);
+      ctx.bezierCurveTo(W * 0.70, H * 0.46, W * 0.78, H * 0.55, W * 0.85, H * 0.52);
+      ctx.bezierCurveTo(W * 0.90, H * 0.50, W * 0.95, H * 0.58, W, H * 0.56);
+      ctx.strokeStyle = '#4F98A3';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      // River label
+      ctx.font = '500 10px Inter, sans-serif';
+      ctx.fillStyle = 'rgba(79, 152, 163, 0.6)';
+      ctx.textAlign = 'left';
+      ctx.save();
+      ctx.translate(W * 0.14, H * 0.22);
+      ctx.rotate(-0.12);
+      ctx.fillText('Nysa Kłodzka', 0, 0);
+      ctx.restore();
+
+      // ── Road closures (thick orange lines) ──
+      ctx.beginPath();
+      ctx.moveTo(cx + 120, cy - 110);
+      ctx.lineTo(cx + 180, cy - 50);
+      ctx.lineTo(cx + 220, cy + 30);
+      ctx.strokeStyle = '#E08644';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      drawX(ctx, cx + 150, cy - 80, 6, '#E08644');
+      drawX(ctx, cx + 200, cy - 10, 6, '#E08644');
+
+      ctx.font = '600 10px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#E08644';
+      ctx.textAlign = 'left';
+      ctx.fillText('DK8 km 12.3-14.7', cx + 225, cy - 10);
+
+      ctx.beginPath();
+      ctx.moveTo(cx - 120, cy + 60);
+      ctx.lineTo(cx - 50, cy + 80);
+      ctx.lineTo(cx + 30, cy + 70);
+      ctx.strokeStyle = '#E08644';
+      ctx.lineWidth = 5;
+      ctx.stroke();
+
+      drawX(ctx, cx - 85, cy + 70, 6, '#E08644');
+      drawX(ctx, cx - 10, cy + 76, 6, '#E08644');
+
+      ctx.font = '600 10px "JetBrains Mono", monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('ul. Nadrzeczna', cx - 128, cy + 56);
+
+      // ── Sandbag line (dashed yellow along levee) ──
+      ctx.beginPath();
+      ctx.moveTo(cx - 180, cy - 40);
+      ctx.lineTo(cx - 130, cy - 65);
+      ctx.lineTo(cx - 60, cy - 80);
+      ctx.lineTo(cx + 10, cy - 85);
+      ctx.setLineDash([10, 6]);
+      ctx.strokeStyle = '#EAB945';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.font = '600 10px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#EAB945';
+      ctx.textAlign = 'center';
+      const sbLabel = 'WORKI ~340 szt.';
+      const sbW = ctx.measureText(sbLabel).width + 12;
+      ctx.fillStyle = 'rgba(234, 185, 69, 0.18)';
+      roundRect(ctx, cx - 88 - sbW / 2, cy - 108, sbW, 18, 3);
+      ctx.fill();
+      ctx.fillStyle = '#EAB945';
+      ctx.fillText(sbLabel, cx - 88, cy - 96);
+
+      // ── Critical infra marker ──
+      const infraX = cx + 170;
+      const infraY = cy + 90;
+
+      ctx.beginPath();
+      ctx.arc(infraX, infraY, 14, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(217, 80, 80, 0.25)';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(infraX, infraY, 8, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(217, 80, 80, 0.5)';
+      ctx.fill();
+
+      ctx.font = '16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⚡', infraX, infraY);
+
+      ctx.font = '500 10px Inter, sans-serif';
+      ctx.fillStyle = '#D95050';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText('Stacja pomp', infraX + 18, infraY - 8);
+      ctx.fillText('Kłodzko-Południe', infraX + 18, infraY + 4);
+
+      // ── Gauge markers ──
+      drawGauge(ctx, W * 0.30, H * 0.33, '#D95050', 'Kłodzko', '212 cm ↑');
+      drawGauge(ctx, W * 0.55, H * 0.42, '#E08644', 'Bardo', '195 cm ↑');
+      drawGauge(ctx, W * 0.82, H * 0.54, '#4F98A3', 'Nysa', '156 cm →');
+
+      // ── Scale bar ──
+      const scaleX = W - 110;
+      const scaleY = H - 28;
+      ctx.strokeStyle = 'rgba(138, 141, 154, 0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(scaleX, scaleY); ctx.lineTo(scaleX + 80, scaleY);
+      ctx.moveTo(scaleX, scaleY - 4); ctx.lineTo(scaleX, scaleY + 4);
+      ctx.moveTo(scaleX + 80, scaleY - 4); ctx.lineTo(scaleX + 80, scaleY + 4);
+      ctx.stroke();
+      ctx.font = '10px "JetBrains Mono", monospace';
+      ctx.fillStyle = 'rgba(138, 141, 154, 0.5)';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('500 m', scaleX + 40, scaleY + 6);
+
+      // ── North arrow ──
+      const naX = 30;
+      const naY = 30;
+      ctx.beginPath();
+      ctx.moveTo(naX, naY - 14);
+      ctx.lineTo(naX - 5, naY + 4);
+      ctx.lineTo(naX, naY);
+      ctx.lineTo(naX + 5, naY + 4);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(226, 228, 234, 0.5)';
+      ctx.fill();
+      ctx.font = '600 10px Inter, sans-serif';
+      ctx.fillStyle = 'rgba(226, 228, 234, 0.5)';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('N', naX, naY + 8);
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawX(ctx, x, y, size, color) {
+      ctx.beginPath();
+      ctx.moveTo(x - size, y - size);
+      ctx.lineTo(x + size, y + size);
+      ctx.moveTo(x + size, y - size);
+      ctx.lineTo(x - size, y + size);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+
+    function drawGauge(ctx, x, y, color, name, value) {
+      ctx.beginPath();
+      ctx.arc(x, y, 10, 0, Math.PI * 2);
+      ctx.fillStyle = color + '30';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      const labelText = name + '  ' + value;
+      ctx.font = '600 10px "JetBrains Mono", monospace';
+      const tw = ctx.measureText(labelText).width + 12;
+      ctx.fillStyle = 'rgba(22, 23, 32, 0.85)';
+      roundRect(ctx, x - tw / 2, y - 26, tw, 16, 3);
+      ctx.fill();
+      ctx.strokeStyle = color + '60';
+      ctx.lineWidth = 1;
+      roundRect(ctx, x - tw / 2, y - 26, tw, 16, 3);
+      ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(labelText, x, y - 18);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+  })();
+
+  // ═══════════════════════════════════════
+  // PDF EXPORT FLOW
+  // ═══════════════════════════════════════
+  (function() {
+    const overlay = document.getElementById('pdf-overlay');
+    const stepEls = document.querySelectorAll('#pdf-steps .pdf-step');
+    const spinner = document.getElementById('pdf-spinner');
+    let running = false;
+
+    const pdfBtnHTML = `<button class="btn-primary" id="btn-pdf">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+      Pobierz PDF
+    </button>`;
+
+    function attachPdf() {
+      const btn = document.getElementById('btn-pdf');
+      if (!btn) return;
+      btn.addEventListener('click', handlePdfClick);
+    }
+
+    function handlePdfClick() {
+      if (running) return;
+      running = true;
+      overlay.classList.add('active');
+
+      stepEls.forEach(s => {
+        s.classList.remove('active', 'done');
+        s.querySelector('.pdf-step-icon').textContent = '○';
+      });
+      spinner.style.display = '';
+
+      const delays = [0, 600, 1300, 2000];
+
+      delays.forEach((delay, i) => {
+        setTimeout(() => {
+          if (i > 0) {
+            stepEls[i - 1].classList.remove('active');
+            stepEls[i - 1].classList.add('done');
+            stepEls[i - 1].querySelector('.pdf-step-icon').textContent = '✓';
+          }
+          stepEls[i].classList.add('active');
+          stepEls[i].querySelector('.pdf-step-icon').textContent = i < 3 ? '◉' : '✓';
+        }, delay);
+      });
+
+      setTimeout(() => {
+        stepEls[3].classList.remove('active');
+        stepEls[3].classList.add('done');
+        spinner.style.display = 'none';
+
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          const cur = document.getElementById('btn-pdf');
+          if (cur) cur.outerHTML = '<button class="btn-success" id="btn-pdf-done">✓ Pobrano</button>';
+
+          setTimeout(() => {
+            const done = document.getElementById('btn-pdf-done');
+            if (done) done.outerHTML = pdfBtnHTML;
+            attachPdf();
+            running = false;
+          }, 3000);
+        }, 400);
+      }, 2500);
+    }
+
+    attachPdf();
+  })();
+  </script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

@@ -1,0 +1,217 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: 'Geist Variable', sans-serif;
+  --font-mono: 'Geist Mono Variable', monospace;
+  --font-heading: var(--font-sans);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+
+  /* Severity colors */
+  --color-l0: var(--l0);
+  --color-l1: var(--l1);
+  --color-l2: var(--l2);
+  --color-l3: var(--l3);
+  --color-l0-bg: var(--l0-bg);
+  --color-l1-bg: var(--l1-bg);
+  --color-l2-bg: var(--l2-bg);
+  --color-l3-bg: var(--l3-bg);
+}
+
+/* ─── Light mode (default — matches Figma) ─────────────────────────── */
+:root {
+  --background: #f4f4f5;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --primary: #09090b;
+  --primary-foreground: #fafafa;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #09090b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #4f46e5;
+  --accent-foreground: #ffffff;
+  --destructive: #b91c1c;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #d4d4d8;
+  --radius: 0.625rem;
+
+  /* Deceris design tokens */
+  --surface: #ffffff;
+  --surface-2: #f4f4f5;
+  --surface-3: #e4e4e7;
+  --border-hover: #d4d4d8;
+  --text: #09090b;
+  --text-muted: #71717a;
+  --text-faint: #a1a1aa;
+  --text-on-accent: #ffffff;
+  --status-live: #16a34a;
+
+  /* Severity — light mode (exact Figma values) */
+  --l0: #b8b8b8;
+  --l1: #ffab02;
+  --l2: #fd6900;
+  --l3: #dd0e0e;
+  --l0-bg: rgba(184, 184, 184, 0.12);
+  --l1-bg: rgba(255, 196, 78, 0.20);
+  --l2-bg: rgba(253, 122, 0, 0.09);
+  --l3-bg: rgba(221, 14, 14, 0.09);
+
+  /* Figma native tokens (aliases) */
+  --severity-l0: var(--l0);
+  --severity-l1: var(--l1);
+  --severity-l2: var(--l2);
+  --severity-l3: var(--l3);
+  --general-accent: #f5f5f5;
+  --general-background: #ffffff;
+
+  /* Shadows */
+  --shadow-sm: 0px 1px 3px rgba(0,0,0,0.10), 0px 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0px 4px 6px rgba(0,0,0,0.07), 0px 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0px 10px 15px rgba(0,0,0,0.10), 0px 4px 6px rgba(0,0,0,0.05);
+
+  /* Liquid Glass */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.60);
+  --glass-blur: 20px;
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────────────── */
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #18181b;
+  --card-foreground: #fafafa;
+  --popover: #18181b;
+  --popover-foreground: #fafafa;
+  --primary: #fafafa;
+  --primary-foreground: #09090b;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #818cf8;
+  --accent-foreground: #ffffff;
+  --destructive: #d93025;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #52525b;
+
+  --surface: #18181b;
+  --surface-2: #27272a;
+  --surface-3: #3f3f46;
+  --status-live: #22c55e;
+
+  --l0: #6b7280;
+  --l1: #f5a623;
+  --l2: #e8711a;
+  --l3: #d93025;
+  --l0-bg: rgba(107, 114, 128, 0.07);
+  --l1-bg: rgba(245, 166, 35, 0.07);
+  --l2-bg: rgba(232, 113, 26, 0.07);
+  --l3-bg: rgba(217, 48, 37, 0.07);
+
+  --glass-bg: rgba(24, 24, 27, 0.80);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 20px;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+  html, body, #root {
+    @apply h-full w-full overflow-hidden;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ─── Liquid Glass ──────────────────────────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  border: 1px solid var(--glass-border);
+}
+
+/* ─── MapLibre overrides ────────────────────────────────────────────── */
+.maplibregl-map {
+  position: absolute;
+  inset: 0;
+}
+.maplibregl-ctrl-bottom-left,
+.maplibregl-ctrl-bottom-right,
+.maplibregl-ctrl-top-left,
+.maplibregl-ctrl-top-right {
+  display: none;
+}
+
+/* ─── Severity badge colors ─────────────────────────────────────────── */
+.badge-l0 { background: var(--l0-bg); color: var(--l0); border-color: transparent; }
+.badge-l1 { background: var(--l1-bg); color: var(--l1); border-color: transparent; }
+.badge-l2 { background: var(--l2-bg); color: var(--l2); border-color: transparent; }
+.badge-l3 { background: var(--l3-bg); color: var(--l3); border-color: transparent; }
+
+/* ─── Animations ────────────────────────────────────────────────────── */
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  50%  { transform: scale(1.5); opacity: 0.3; }
+  100% { transform: scale(2);   opacity: 0; }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* ─── Heatbar ───────────────────────────────────────────────────────── */
+.heatbar {
+  display: flex;
+  gap: 2px;
+  height: 3px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.heatbar-segment {
+  flex: 1;
+  border-radius: 2px;
+  transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}

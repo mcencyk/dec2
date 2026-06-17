@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deceris — Eksplorator danych</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="analysis.css">
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-label="Deceris">
+        <circle cx="16" cy="16" r="14" stroke="#4F98A3" stroke-width="2"/>
+        <path d="M10 20 Q16 8 22 20" stroke="#4F98A3" stroke-width="2" fill="none"/>
+        <circle cx="16" cy="15" r="2" fill="#4F98A3"/>
+      </svg>
+      <span class="logo-text">Deceris</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="monitor.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Monitor</span>
+      </a>
+      <a href="threats.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Zagrożenia</span>
+        <span class="nav-badge">3</span>
+      </a>
+      <a href="analysis.html" class="nav-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span>Analiza</span>
+      </a>
+      <a href="history.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>Historia</span>
+      </a>
+      <a href="#" class="nav-item nav-disabled">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span>Źródła danych</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">PS</div>
+        <div class="user-meta">
+          <span class="user-name">Paweł S.</span>
+          <span class="user-role">Administrator</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="explorer-title">Eksplorator danych</h1>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" id="btn-new-whatif">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nowa analiza what-if
+        </button>
+      </div>
+    </header>
+
+    <!-- EXPLORER LAYOUT -->
+    <div class="explorer-layout">
+
+      <!-- LEFT — LAYER PANEL -->
+      <div class="layer-panel" id="layer-panel">
+        <div class="layer-panel-header">
+          <span class="layer-panel-title">Warstwy</span>
+          <span class="layer-count" id="layer-count">4 aktywne</span>
+        </div>
+
+        <!-- Section: Zdarzenia historyczne -->
+        <div class="layer-section" data-section="events">
+          <div class="layer-section-header" data-toggle="events">
+            <span>Zdarzenia historyczne</span>
+            <svg class="section-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+          </div>
+          <div class="layer-section-body" id="section-events">
+            <div class="layer-item active" data-layer="flood2024">
+              <span class="layer-dot-active"></span>
+              <span class="layer-check">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+              </span>
+              <span class="layer-color-dot" style="background:#D95050"></span>
+              <span class="layer-name">Powódź 2024 — Nysa Kłodzka</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+            <div class="layer-item" data-layer="flood2010">
+              <span class="layer-dot-inactive"></span>
+              <span class="layer-check-empty"></span>
+              <span class="layer-color-dot" style="background:#E08644"></span>
+              <span class="layer-name">Powódź 2010 — Odra</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+            <div class="layer-item" data-layer="flood1997">
+              <span class="layer-dot-inactive"></span>
+              <span class="layer-check-empty"></span>
+              <span class="layer-color-dot" style="background:#EAB945"></span>
+              <span class="layer-name">Powódź 1997 — Odra</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+            <div class="layer-item" data-layer="drought2019">
+              <span class="layer-dot-inactive"></span>
+              <span class="layer-check-empty"></span>
+              <span class="layer-color-dot" style="background:#BB653B"></span>
+              <span class="layer-name">Susza 2019 — Dolny Śląsk</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Dane klimatyczne -->
+        <div class="layer-section" data-section="climate">
+          <div class="layer-section-header" data-toggle="climate">
+            <span>Dane klimatyczne</span>
+            <svg class="section-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+          </div>
+          <div class="layer-section-body" id="section-climate">
+            <div class="layer-item active" data-layer="rainfall">
+              <span class="layer-dot-active"></span>
+              <span class="layer-check">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+              </span>
+              <span class="layer-color-dot" style="background:#4F98A3"></span>
+              <span class="layer-name">Opad roczny 2000–2024</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+            <div class="layer-item" data-layer="temperature">
+              <span class="layer-dot-inactive"></span>
+              <span class="layer-check-empty"></span>
+              <span class="layer-color-dot" style="background:#E08644"></span>
+              <span class="layer-name">Temperatura śr. 2000–2024</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+            <div class="layer-item" data-layer="palmer">
+              <span class="layer-dot-inactive"></span>
+              <span class="layer-check-empty"></span>
+              <span class="layer-color-dot" style="background:#BB653B"></span>
+              <span class="layer-name">Indeks suszy Palmer</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+            <div class="layer-item" data-layer="flowQ">
+              <span class="layer-dot-inactive"></span>
+              <span class="layer-check-empty"></span>
+              <span class="layer-color-dot" style="background:#C74FBB"></span>
+              <span class="layer-name">Przepływ Q10% / Q1%</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Infrastruktura -->
+        <div class="layer-section" data-section="infra">
+          <div class="layer-section-header" data-toggle="infra">
+            <span>Infrastruktura</span>
+            <svg class="section-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+          </div>
+          <div class="layer-section-body" id="section-infra">
+            <div class="layer-item active" data-layer="rivers">
+              <span class="layer-dot-active"></span>
+              <span class="layer-check">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+              </span>
+              <span class="layer-color-dot" style="background:#4F98A3"></span>
+              <span class="layer-name">Sieć rzeczna (MPHP)</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+            <div class="layer-item active" data-layer="buildings">
+              <span class="layer-dot-active"></span>
+              <span class="layer-check">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+              </span>
+              <span class="layer-color-dot" style="background:#3B82F6"></span>
+              <span class="layer-name">Budynki BDOT10k</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+            <div class="layer-item" data-layer="reservoirs">
+              <span class="layer-dot-inactive"></span>
+              <span class="layer-check-empty"></span>
+              <span class="layer-color-dot" style="background:#5AAD6D"></span>
+              <span class="layer-name">Zbiorniki retencyjne</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+            <div class="layer-item" data-layer="levees">
+              <span class="layer-dot-inactive"></span>
+              <span class="layer-check-empty"></span>
+              <span class="layer-color-dot" style="background:#EAB945"></span>
+              <span class="layer-name">Wały przeciwpowodziowe</span>
+              <button class="layer-show-btn">pokaż</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Prywatne datasety -->
+        <div class="layer-section" data-section="private">
+          <div class="layer-section-header" data-toggle="private">
+            <span>Prywatne datasety</span>
+            <svg class="section-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+          </div>
+          <div class="layer-section-body" id="section-private">
+            <div class="layer-empty">
+              <button class="btn-add-dataset">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Dodaj dataset
+              </button>
+              <span class="layer-empty-hint">(puste)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER — MAP -->
+      <div class="map-container" id="map-container">
+        <!-- Map badge -->
+        <div class="map-badge" id="map-badge">Dane historyczne · <span id="badge-year">2024</span></div>
+
+        <!-- GIS toolbar -->
+        <div class="gis-toolbar">
+          <button class="gis-btn active" data-tool="select" title="Zaznacz">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+          </button>
+          <button class="gis-btn" data-tool="line" title="Linia">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+          </button>
+          <button class="gis-btn" data-tool="polygon" title="Poligon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 22,8.5 19,20 5,20 2,8.5"/></svg>
+          </button>
+          <button class="gis-btn" data-tool="marker" title="Marker">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </button>
+          <div class="gis-divider"></div>
+          <button class="gis-btn" data-tool="measure" title="Pomiar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20v-4"/><path d="M9 20v-2"/><path d="M13 20v-4"/><path d="M17 20v-2"/><path d="M21 20v-4"/></svg>
+          </button>
+          <button class="gis-btn" data-tool="undo" title="Cofnij">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          </button>
+        </div>
+
+        <!-- Active layer toggles -->
+        <div class="map-layer-toggles" id="map-layer-toggles">
+          <button class="btn-ghost btn-sm layer-active" data-maplayer="flood2024">Powódź 2024</button>
+          <button class="btn-ghost btn-sm layer-active" data-maplayer="rainfall">Opad roczny</button>
+          <button class="btn-ghost btn-sm layer-active" data-maplayer="rivers">Sieć rzeczna</button>
+          <button class="btn-ghost btn-sm layer-active" data-maplayer="buildings">Budynki</button>
+        </div>
+
+        <!-- Canvas -->
+        <canvas id="explorer-map"></canvas>
+
+        <!-- Map legend -->
+        <div class="map-legend" id="map-legend">
+          <div class="legend-item">
+            <span class="legend-swatch" style="background:#4F98A3"></span>
+            Sieć rzeczna
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch" style="background:linear-gradient(90deg,#4F98A3,#D95050)"></span>
+            Strefa zalewowa
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch" style="background:#3B82F6"></span>
+            Budynki
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch" style="background:#5AAD6D"></span>
+            Opad (intensywność)
+          </div>
+        </div>
+
+        <!-- Timeline control bar -->
+        <div class="timeline-bar" id="timeline-bar">
+          <div class="timeline-controls">
+            <button class="tl-btn" id="tl-prev" title="Poprzedni rok">◄</button>
+            <button class="tl-btn" id="tl-play" title="Odtwarzaj">▶</button>
+          </div>
+          <div class="tl-slider-wrap">
+            <span class="tl-range-label">2000</span>
+            <input type="range" class="tl-range" id="tl-slider" min="2000" max="2024" value="2024" step="1">
+            <span class="tl-range-label">2024</span>
+          </div>
+          <span class="tl-year" id="tl-year">2024</span>
+          <div class="tl-speed-btns">
+            <button class="tl-btn tl-speed active" data-speed="1">1x</button>
+            <button class="tl-btn tl-speed" data-speed="2">2x</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT — ANALYSIS PANEL -->
+      <div class="analysis-panel" id="analysis-panel">
+        <!-- Tabs -->
+        <div class="analysis-panel-tabs">
+          <button class="ap-tab active" data-tab="stats">Statystyki</button>
+          <button class="ap-tab" data-tab="whatif">What-if</button>
+          <button class="ap-tab" data-tab="compare">Porównanie</button>
+        </div>
+
+        <!-- Tab: STATYSTYKI -->
+        <div class="analysis-panel-content" id="tab-stats">
+          <div class="stat-event-title">Powódź 2024 — Nysa Kłodzka</div>
+          <div class="stat-separator"></div>
+
+          <div class="stat-grid">
+            <div class="stat-item">
+              <div class="stat-label">Data szczytu</div>
+              <div class="stat-value">2024-09-15</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Max. przepływ</div>
+              <div class="stat-value">1 847 <span class="stat-unit">m³/s</span></div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Czas trwania</div>
+              <div class="stat-value">8 <span class="stat-unit">dni</span></div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Strefa zalewowa</div>
+              <div class="stat-value">~3.2 <span class="stat-unit">km²</span></div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Budynki dotknięte</div>
+              <div class="stat-value">68</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Koszt (rozp.)</div>
+              <div class="stat-value">22–30M <span class="stat-unit">PLN</span></div>
+            </div>
+          </div>
+
+          <!-- Trend chart -->
+          <div class="trend-chart-wrap">
+            <div class="trend-title">Kulminacje przepływu — Nysa Kłodzka (2000–2024)</div>
+            <canvas id="trend-chart" height="140"></canvas>
+            <div class="trend-indicator trend-up">↑ Trend: +12% w ciągu 25 lat</div>
+          </div>
+
+          <!-- Comparison note -->
+          <div class="comparison-note" id="comparison-note" style="display:none;">
+            <div class="cn-title">2024 vs 2010:</div>
+            <div class="cn-row">
+              <span class="cn-label">Zasięg:</span>
+              <span class="cn-value cn-worse">+24% (2024 większy)</span>
+            </div>
+            <div class="cn-row">
+              <span class="cn-label">Budynki:</span>
+              <span class="cn-value cn-worse">+38% (2024 więcej)</span>
+            </div>
+            <div class="cn-row">
+              <span class="cn-label">Koszty:</span>
+              <span class="cn-value cn-worse">+41%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: WHAT-IF -->
+        <div class="analysis-panel-content" id="tab-whatif" style="display:none;">
+          <div class="whatif-header">Analiza planistyczna</div>
+          <div class="whatif-subheader">Uruchom scenariusz bez aktywnego zagrożenia</div>
+
+          <div class="whatif-form">
+            <div class="form-row">
+              <label class="form-label">Pipeline</label>
+              <select class="form-input select-pipeline" id="pipeline-select">
+                <option>Flood Risk — Nysa Kłodzka</option>
+                <option>Flood Risk — Odra</option>
+                <option>Drought Risk — Dolny Śląsk</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Zmiana opadów</label>
+              <div class="slider-group">
+                <span class="slider-bound">-50%</span>
+                <input type="range" class="slider-input" id="precip-slider" min="-50" max="100" value="20" step="5">
+                <span class="slider-bound">+100%</span>
+                <span class="slider-value" id="precip-value">+20%</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Zbiornik retencyjny</label>
+              <div class="whatif-check-row">
+                <label class="check-option">
+                  <input type="checkbox" id="reservoir-check">
+                  <span>Wybuduj zbiornik X</span>
+                </label>
+                <button class="btn-ghost btn-sm btn-draw-geo">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+                  Zaznacz na mapie
+                </button>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Nowy wał</label>
+              <div class="whatif-check-row">
+                <label class="check-option">
+                  <input type="checkbox" id="levee-check">
+                  <span>Odcinek km</span>
+                </label>
+                <input type="text" class="form-input form-input-sm" placeholder="np. 12.3 – 15.8" style="width:130px;">
+              </div>
+            </div>
+
+            <button class="btn-primary btn-compute" id="btn-run-analysis">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5,3 19,12 5,21 5,3"/></svg>
+              Uruchom analizę
+            </button>
+          </div>
+
+          <!-- Scenario result (hidden initially) -->
+          <div class="scenario-result" id="scenario-result" style="display:none;">
+            <div class="sr-header">
+              <span class="sr-badge">Scenariusz</span>
+              <span class="sr-title">Zbiornik retencyjny X</span>
+            </div>
+            <div class="sr-grid">
+              <div class="sr-item">
+                <span class="sr-label">Δ Strefa zalewowa</span>
+                <span class="sr-value sr-better">-18%</span>
+              </div>
+              <div class="sr-item">
+                <span class="sr-label">Δ Budynki</span>
+                <span class="sr-value sr-better">-12</span>
+              </div>
+              <div class="sr-item">
+                <span class="sr-label">Δ Max. przepływ</span>
+                <span class="sr-value sr-better">-320 m³/s</span>
+              </div>
+              <div class="sr-item">
+                <span class="sr-label">Δ Koszty</span>
+                <span class="sr-value sr-better">-8M PLN</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent analyses -->
+          <div class="recent-analyses">
+            <div class="recent-title">Ostatnie analizy</div>
+            <div class="recent-item">
+              <span class="recent-name">Zbiornik retencyjny X</span>
+              <span class="recent-meta">Paweł S. · 3 dni temu</span>
+            </div>
+            <div class="recent-item">
+              <span class="recent-name">+20% opady 2050 RCP4.5</span>
+              <span class="recent-meta">Paweł S. · 1 tydzień temu</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: PORÓWNANIE -->
+        <div class="analysis-panel-content" id="tab-compare" style="display:none;">
+          <div class="compare-selectors">
+            <div class="compare-select-row">
+              <span class="compare-label">A:</span>
+              <select class="form-input select-sm" id="compare-a">
+                <option>Powódź 2024</option>
+                <option>Powódź 2010</option>
+                <option>Powódź 1997</option>
+              </select>
+            </div>
+            <div class="compare-select-row">
+              <span class="compare-label">B:</span>
+              <select class="form-input select-sm" id="compare-b">
+                <option>Powódź 2010</option>
+                <option>Powódź 2024</option>
+                <option>Powódź 1997</option>
+              </select>
+            </div>
+          </div>
+
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Atrybut</th>
+                <th>2024</th>
+                <th>2010</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Strefa zalewowa</td>
+                <td>3.2 km²</td>
+                <td>2.6 km² <span class="compare-worse">(+23%)</span></td>
+              </tr>
+              <tr>
+                <td>Budynki</td>
+                <td>68</td>
+                <td>49 <span class="compare-worse">(+39%)</span></td>
+              </tr>
+              <tr>
+                <td>Drogi zamknięte</td>
+                <td>4</td>
+                <td>3 <span class="compare-worse">(+33%)</span></td>
+              </tr>
+              <tr>
+                <td>Koszt (rozp.)</td>
+                <td>22–30M PLN</td>
+                <td>15–22M PLN</td>
+              </tr>
+              <tr>
+                <td>Max. przepływ</td>
+                <td>1 847 m³/s</td>
+                <td>1 420 m³/s <span class="compare-worse">(+30%)</span></td>
+              </tr>
+              <tr>
+                <td>Czas trwania</td>
+                <td>8 dni</td>
+                <td>6 dni</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <button class="btn-outline btn-sm btn-export-compare">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Eksportuj porównanie
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /explorer-layout -->
+  </main>
+
+  <!-- COMPUTE PROGRESS OVERLAY -->
+  <div class="progress-overlay" id="progress-overlay" style="display:none;">
+    <div class="progress-card">
+      <div class="progress-title">Uruchamiam analizę…</div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-pct" id="progress-pct">0%</div>
+    </div>
+  </div>
+
+  <script src="analysis.js"></script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

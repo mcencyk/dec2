@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deceris — Threat Detail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="threat-detail.css">
+</head>
+<body>
+  <!-- SIDEBAR (exact copy from threats.html) -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-label="Deceris">
+        <circle cx="16" cy="16" r="14" stroke="#4F98A3" stroke-width="2"/>
+        <path d="M10 20 Q16 8 22 20" stroke="#4F98A3" stroke-width="2" fill="none"/>
+        <circle cx="16" cy="15" r="2" fill="#4F98A3"/>
+      </svg>
+      <span class="logo-text">Deceris</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="monitor.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Monitor</span>
+      </a>
+      <a href="threats.html" class="nav-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Zagrożenia</span>
+        <span class="nav-badge" id="threat-count">3</span>
+      </a>
+      <a href="analysis.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span>Analiza</span>
+      </a>
+      <a href="history.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>Historia</span>
+      </a>
+      <a href="#" class="nav-item nav-disabled">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span>Źródła danych</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">PS</div>
+        <div class="user-meta">
+          <span class="user-name">Paweł S.</span>
+          <span class="user-role">Administrator</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar-detail">
+      <div class="topbar-left">
+        <a href="threats.html" class="topbar-back" title="Wróć do listy">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        </a>
+        <div class="topbar-breadcrumb">
+          <a href="threats.html">Zagrożenia</a>
+          <span class="topbar-sep">/</span>
+          <span class="topbar-event-id">EVT-2026-04-003</span>
+          <span class="topbar-sep">/</span>
+          <span class="topbar-threat-badge badge-flood">POWÓDŹ</span>
+          <span class="topbar-threat-title">Flood Risk — Nysa Kłodzka</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-status">
+          <span class="status-dot"></span>
+          AKTYWNE
+        </div>
+        <button class="btn-outline btn-sm" id="btn-acknowledge">Acknowledge</button>
+      </div>
+    </header>
+
+    <!-- WORKSPACE: MAP | SCENARIO PANEL -->
+    <div class="workspace">
+      <!-- MAP COLUMN -->
+      <div class="map-column">
+        <!-- Layer toggles bar -->
+        <div class="map-layer-bar">
+          <button class="layer-btn layer-active" data-layer="exposure" id="layer-exposure">Exposure</button>
+          <button class="layer-btn layer-active" data-layer="buildings" id="layer-buildings">Budynki</button>
+          <button class="layer-btn layer-active" data-layer="roads" id="layer-roads">Drogi</button>
+          <button class="layer-btn layer-active" data-layer="infra" id="layer-infra">Infra</button>
+          <div class="dataset-dropdown-wrap">
+            <button class="layer-btn" id="btn-dane">Dane <span class="layer-caret">▾</span></button>
+            <div class="dataset-dropdown" id="dataset-dropdown">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Map canvas area -->
+        <div class="map-canvas-wrap">
+          <canvas id="map-canvas"></canvas>
+
+          <!-- View badge -->
+          <div class="map-view-badge" id="map-view-badge">Widok: bazowy</div>
+
+          <!-- GIS Toolbar -->
+          <div class="gis-toolbar">
+            <button class="gis-tool-btn gis-active" data-tool="select" title="Zaznacz">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+            </button>
+            <button class="gis-tool-btn" data-tool="line" title="Linia">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+            </button>
+            <button class="gis-tool-btn" data-tool="polygon" title="Poligon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 22,8.5 18,21 6,21 2,8.5"/></svg>
+            </button>
+            <button class="gis-tool-btn" data-tool="marker" title="Marker">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </button>
+            <button class="gis-tool-btn" data-tool="measure" title="Pomiar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 17v3M9 14v6M13 17v3M17 11v9M21 14v6"/></svg>
+            </button>
+            <button class="gis-tool-btn" id="btn-gis-undo" title="Cofnij">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 105.64-8.36L1 10"/></svg>
+            </button>
+          </div>
+
+          <!-- GIS drawing hint -->
+          <div class="gis-hint" id="gis-hint">Kliknij aby dodać punkt · Dwuklik aby zakończyć</div>
+
+          <!-- Map legend -->
+          <div class="map-legend" id="map-legend">
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:#EAB945"></span> Mieszkalne
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:#4F98A3"></span> Usługowe
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:#D95050"></span> Krytyczne
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch" style="background:rgba(79,152,163,0.15)"></span> Strefa
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ CHARTS SECTION ══ -->
+        <div class="charts-section">
+
+          <!-- CHART 1: Wave Propagation -->
+          <div class="chart-panel">
+            <div class="chart-panel-header">
+              <span class="chart-title">Propagacja fali</span>
+              <button class="chart-animate-btn" id="btn-animate-wave" onclick="toggleWaveAnimation()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                Animuj
+              </button>
+            </div>
+            <canvas id="chart-wave-canvas"></canvas>
+            <div class="chart-scrubber-wrap">
+              <span class="chart-scrubber-label">T+0h</span>
+              <input type="range" id="wave-scrubber" min="0" max="72" value="36" step="1"
+                     oninput="onWaveScrubberChange(this.value)">
+              <span class="chart-scrubber-label">T+72h</span>
+              <span class="chart-time-badge" id="wave-time-badge">T+36h</span>
+            </div>
+          </div>
+
+          <!-- CHART 2: Hydrograph -->
+          <div class="chart-panel">
+            <div class="chart-panel-header">
+              <span class="chart-title" id="hydro-chart-title">Hydrograf — Kłodzko km 34.2</span>
+              <select class="chart-gauge-select" id="gauge-select" onchange="onGaugeSelectChange(this.value)">
+                <option value="klodzko">Kłodzko km 34.2 (L3)</option>
+                <option value="bystrzyca">Bystrzyca km 12.4 (L1)</option>
+                <option value="bardo">Bardo km 52.7 (L2)</option>
+              </select>
+            </div>
+            <canvas id="chart-hydro-canvas"></canvas>
+            <div class="chart-legend" id="hydro-legend">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SCENARIO PANEL -->
+      <div class="scenario-panel">
+        <!-- Tabs -->
+        <div class="scenario-tabs">
+          <button class="scenario-tab active" data-tab="scenarios" id="tab-scenarios">Scenariusze</button>
+          <button class="scenario-tab" data-tab="comparison" id="tab-comparison">Porównanie</button>
+          <button class="scenario-tab" data-tab="decision" id="tab-decision">
+            Decyzja
+            <span class="scenario-tab-badge" id="decision-badge">0</span>
+          </button>
+          <button class="scenario-tab" data-tab="history" id="tab-history">Historia</button>
+        </div>
+
+        <!-- Tab content: Scenariusze -->
+        <div class="scenario-content" id="content-scenarios">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Tab content: Porównanie -->
+        <div class="scenario-content" id="content-comparison" style="display:none">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Tab content: Decyzja -->
+        <div class="scenario-content" id="content-decision" style="display:none">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Tab content: Historia -->
+        <div class="scenario-content" id="content-history" style="display:none">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- DATASET FLOW DRAWER -->
+  <div class="ds-flow-backdrop" id="ds-flow-backdrop"></div>
+  <aside class="ds-flow-drawer" id="ds-flow-drawer">
+    
+    <div class="ds-flow-header">
+      <div class="ds-flow-steps-indicator">
+        <div class="ds-step-dot active" data-step="1">1</div>
+        <div class="ds-step-line"></div>
+        <div class="ds-step-dot" data-step="2">2</div>
+        <div class="ds-step-line"></div>
+        <div class="ds-step-dot" data-step="3">3</div>
+      </div>
+      <button class="btn-ghost btn-sm" id="ds-flow-close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- STEP 1: Choose source -->
+    <div class="ds-flow-step active" id="ds-step-1">
+      <div class="ds-step-header">
+        <div class="ds-step-number">Krok 1 z 3</div>
+        <div class="ds-step-title">Wybierz źródło danych</div>
+        <div class="ds-step-desc">Wgraj plik lub podaj URL do datasetu</div>
+      </div>
+      
+      <div class="ds-upload-zone" id="ds-upload-zone">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="ds-upload-text">Przeciągnij plik tutaj</div>
+        <div class="ds-upload-formats">GeoJSON · CSV · SHP · KML</div>
+        <button class="btn-outline btn-sm" id="ds-browse-btn">Przeglądaj pliki</button>
+      </div>
+      
+      <div class="ds-or-divider"><span>lub</span></div>
+      
+      <div class="ds-url-section">
+        <label class="ds-label">URL do datasetu (WFS, GeoJSON API)</label>
+        <div class="ds-url-row">
+          <input type="text" class="ds-input" id="ds-url-input" placeholder="https://dane.gov.pl/api/...">
+          <button class="btn-outline btn-sm" id="ds-url-load">Wczytaj</button>
+        </div>
+      </div>
+      
+      <!-- Example datasets (mock) -->
+      <div class="ds-examples">
+        <div class="ds-examples-label">Przykłady publicznych źródeł</div>
+        <button class="ds-example-btn" data-url="isok">
+          <span class="ds-example-icon">🗺</span>
+          <div class="ds-example-info">
+            <div class="ds-example-name">ISOK — mapy zagrożenia</div>
+            <div class="ds-example-desc">Strefy Q10%, Q1%, Q0.2% dla Dolnego Śląska</div>
+          </div>
+        </button>
+        <button class="ds-example-btn" data-url="bdot">
+          <span class="ds-example-icon">🏗</span>
+          <div class="ds-example-info">
+            <div class="ds-example-name">BDOT10k — obiekty topograficzne</div>
+            <div class="ds-example-desc">Budynki, drogi, infrastruktura</div>
+          </div>
+        </button>
+        <button class="ds-example-btn" data-url="private">
+          <span class="ds-example-icon">🔒</span>
+          <div class="ds-example-info">
+            <div class="ds-example-name">Prywatny dataset (np. wojskowy)</div>
+            <div class="ds-example-desc">Wgraj plik lokalny — nie jest przechowywany</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="ds-flow-footer">
+        <div></div>
+        <button class="btn-primary btn-sm" id="ds-step1-next" disabled>Dalej →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Preview & configure -->
+    <div class="ds-flow-step hidden" id="ds-step-2">
+      <div class="ds-step-header">
+        <div class="ds-step-number">Krok 2 z 3</div>
+        <div class="ds-step-title">Podgląd i konfiguracja</div>
+        <div class="ds-step-desc">Sprawdź jak dataset wygląda na mapie i skonfiguruj ustawienia</div>
+      </div>
+
+      <!-- Mini map preview -->
+      <div class="ds-map-preview">
+        <canvas id="ds-preview-canvas" width="368" height="160"></canvas>
+        <div class="ds-map-preview-badge">Podgląd na mapie</div>
+      </div>
+
+      <!-- Loaded file info -->
+      <div class="ds-file-info" id="ds-file-info">
+        <div class="ds-file-icon">📄</div>
+        <div class="ds-file-details">
+          <div class="ds-file-name" id="ds-file-name">infrastruktura_wojskowa.geojson</div>
+          <div class="ds-file-meta" id="ds-file-meta">127 obiektów · 2.3 MB · Punkt/Poligon</div>
+        </div>
+      </div>
+
+      <div class="ds-config-fields">
+        <div class="ds-field">
+          <label class="ds-label">Nazwa warstwy</label>
+          <input type="text" class="ds-input" id="ds-layer-name" value="Infrastruktura wojskowa">
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">Typ obiektów</label>
+          <select class="ds-select" id="ds-object-type">
+            <option value="buildings">Budynki</option>
+            <option value="roads">Drogi</option>
+            <option value="critical_infra" selected>Infrastruktura krytyczna</option>
+            <option value="other">Inne</option>
+          </select>
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">Widoczność</label>
+          <div class="ds-radio-group">
+            <label class="ds-radio">
+              <input type="radio" name="ds-visibility" value="private" checked>
+              <span>🔒 Prywatna</span>
+              <span class="ds-radio-desc">tylko ta sesja</span>
+            </label>
+            <label class="ds-radio">
+              <input type="radio" name="ds-visibility" value="org">
+              <span>👥 Organizacja</span>
+            </label>
+          </div>
+        </div>
+        <div class="ds-field">
+          <label class="ds-label ds-label-important">Wpływ na kalkulację</label>
+          <label class="ds-checkbox-row">
+            <input type="checkbox" id="ds-affects-calc" checked>
+            <span>Dataset wchodzi do przeliczenia konsekwencji</span>
+          </label>
+          <div class="ds-affects-note" id="ds-affects-note">
+            Obiekty z tego datasetu będą liczone jako zagrożone budynki/drogi/infra krytyczna. Wpływa na wyniki scenariuszy i koszty wg rozporządzenia.
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-flow-footer">
+        <button class="btn-ghost btn-sm" id="ds-step2-back">← Wróć</button>
+        <button class="btn-primary btn-sm" id="ds-step2-next">Dodaj warstwę →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Confirmation -->
+    <div class="ds-flow-step hidden" id="ds-step-3">
+      <div class="ds-step-header">
+        <div class="ds-step-number">Krok 3 z 3</div>
+        <div class="ds-step-title">Warstwa dodana</div>
+      </div>
+
+      <div class="ds-success-state">
+        <div class="ds-success-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="20,6 9,17 4,12"/></svg>
+        </div>
+        <div class="ds-success-title" id="ds-success-title">Infrastruktura wojskowa</div>
+        <div class="ds-success-meta">
+          <span id="ds-success-objects">127 obiektów</span> · 
+          <span id="ds-success-visibility">🔒 Prywatna</span> · 
+          <span id="ds-success-calc" class="ds-affects-badge">wpływa na wyniki</span>
+        </div>
+      </div>
+
+      <!-- What changed -->
+      <div class="ds-impact-summary">
+        <div class="ds-impact-title">Co się zmieniło</div>
+        <div class="ds-impact-item">
+          <span class="ds-impact-icon">🗺</span>
+          <span>Warstwa widoczna na mapie — <strong>23 obiekty w strefie zagrożenia</strong></span>
+        </div>
+        <div class="ds-impact-item">
+          <span class="ds-impact-icon">📊</span>
+          <span>Następny przeliczony scenariusz uwzględni te obiekty w kalkulacji</span>
+        </div>
+        <div class="ds-impact-item">
+          <span class="ds-impact-icon">🔒</span>
+          <span>Dataset prywatny — usunięty po zamknięciu sesji</span>
+        </div>
+      </div>
+
+      <!-- Layer in panel (confirmation) -->
+      <div class="ds-layer-added">
+        <div class="ds-layer-row">
+          <span class="ds-layer-dot-priv"></span>
+          <span class="ds-layer-added-name" id="ds-layer-added-name">Infrastruktura wojskowa</span>
+          <span class="ds-private-badge">PRYWATNA</span>
+          <span class="ds-affects-badge">wpływa</span>
+        </div>
+      </div>
+
+      <div class="ds-flow-footer">
+        <button class="btn-outline btn-sm" id="ds-add-another">+ Dodaj kolejny</button>
+        <button class="btn-primary btn-sm" id="ds-step3-done">Zamknij</button>
+      </div>
+    </div>
+
+  </aside>
+
+  <script src="threat-detail.js"></script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

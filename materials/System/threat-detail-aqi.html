@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deceris — Air Quality Risk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="threat-detail.css">
+  <style>
+    /* Schema bar — thin info strip below topbar */
+    .schema-bar {
+      padding: 5px 24px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-faint);
+      flex-shrink: 0;
+    }
+    .schema-bar strong {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .schema-bar-btn {
+      background: none;
+      border: none;
+      color: var(--teal);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity var(--transition);
+    }
+    .schema-bar-btn:hover {
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <!-- ═══ SIDEBAR (same as threat-detail.html) ═══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-label="Deceris">
+        <circle cx="16" cy="16" r="14" stroke="#4F98A3" stroke-width="2"/>
+        <path d="M10 20 Q16 8 22 20" stroke="#4F98A3" stroke-width="2" fill="none"/>
+        <circle cx="16" cy="15" r="2" fill="#4F98A3"/>
+      </svg>
+      <span class="logo-text">Deceris</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="monitor.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Monitor</span>
+      </a>
+      <a href="threats.html" class="nav-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Zagrożenia</span>
+        <span class="nav-badge" id="threat-count">3</span>
+      </a>
+      <a href="analysis.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span>Analiza</span>
+      </a>
+      <a href="#" class="nav-item nav-disabled">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span>Źródła danych</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">PS</div>
+        <div class="user-meta">
+          <span class="user-name">Paweł S.</span>
+          <span class="user-role">Administrator</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <div class="main-content">
+
+    <!-- ═══ SCHEMA BAR ═══ -->
+    <div class="schema-bar">
+      <span class="schema-bar-text">
+        Template: <strong>dispersion</strong> · identify_key: <strong>location_name</strong> · metric: <strong>aqi</strong> (AQI) · 2 what-if params · <button class="schema-bar-btn">⚙ Edit View Schema</button>
+      </span>
+    </div>
+
+    <!-- ═══ TOPBAR 56px ═══ -->
+    <header class="topbar td-topbar">
+      <div class="topbar-left">
+        <a href="threats.html" class="td-back-link">← Zagrożenia</a>
+        <span class="topbar-sep">/</span>
+        <a href="threats.html" class="topbar-title topbar-title-link">EVT-2026-04-021</a>
+        <span class="topbar-sep">/</span>
+        <span class="td-type-badge" style="background:var(--l2-bg);color:var(--l2);border-color:var(--l2);">SMOG</span>
+        <span class="td-event-name">Air Quality Risk — Wrocław Centrum</span>
+        <span class="td-status-active" style="color:var(--l2);">
+          <span class="td-pulse-dot" style="background:var(--l2);box-shadow:0 0 8px var(--l2);"></span>
+          AKTYWNE
+        </span>
+      </div>
+      <div class="topbar-right">
+        <div class="mode-badge mode-situation" id="mode-badge">
+          <span class="mode-icon">📋</span>
+          <span class="mode-label">Sytuacja</span>
+        </div>
+        <button class="btn-outline btn-sm" id="btn-acknowledge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+          Acknowledge
+        </button>
+      </div>
+    </header>
+
+    <!-- ═══ WORKSPACE (fills remaining height) ═══ -->
+    <div class="workspace">
+
+      <!-- ═══ MAP COLUMN (60%) ═══ -->
+      <div class="map-column">
+        <!-- Layer toggles bar -->
+        <div class="map-toolbar">
+          <div class="layer-toggles">
+            <button class="layer-pill active" data-layer="dispersion">Dyspersja</button>
+            <button class="layer-pill active" data-layer="hospitals">Szpitale</button>
+            <button class="layer-pill active" data-layer="schools">Szkoły</button>
+            <button class="layer-pill active" data-layer="density">Gęstość pop.</button>
+          </div>
+          <div class="map-view-badge" id="map-view-badge">Widok: strefa dyspersji</div>
+        </div>
+
+        <!-- Map canvas container -->
+        <div class="map-canvas-wrap">
+          <!-- GIS toolbar (vertical, left side) -->
+          <div class="map-gis-toolbar">
+            <button class="map-gis-btn active" data-tool="select" title="Zaznacz">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51z"/></svg>
+            </button>
+            <button class="map-gis-btn" data-tool="line" title="Linia">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/></svg>
+            </button>
+            <button class="map-gis-btn" data-tool="polygon" title="Poligon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 22,8.5 18,20 6,20 2,8.5"/></svg>
+            </button>
+            <button class="map-gis-btn" data-tool="marker" title="Marker">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </button>
+            <button class="map-gis-btn" data-tool="measure" title="Pomiar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"/><path d="M6 8v8"/><path d="M18 8v8"/></svg>
+            </button>
+            <button class="map-gis-btn" id="btn-undo" title="Cofnij">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 105.64-8.36L1 10"/></svg>
+            </button>
+          </div>
+
+          <!-- Canvas -->
+          <canvas id="map-canvas"></canvas>
+
+          <!-- Drawing hint (hidden by default) -->
+          <div class="drawing-hint hidden" id="drawing-hint">
+            Kliknij aby dodać punkt · Dwuklik aby zakończyć
+          </div>
+
+          <!-- Map legend -->
+          <div class="map-legend" id="map-legend">
+            <div class="legend-item"><span class="legend-swatch" style="background:rgba(217,80,80,0.5)"></span>Krytyczna</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:rgba(224,134,68,0.4)"></span>Narażenia</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:rgba(234,185,69,0.3)"></span>Monitorowania</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:#EF4444"></span>Źródło</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL COLUMN (40%) ═══ -->
+      <div class="panel-column">
+        <!-- Panel tabs -->
+        <div class="panel-tabs">
+          <button class="panel-tab active" data-panel="situation">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+            <span>Sytuacja</span>
+          </button>
+          <button class="panel-tab" data-panel="simulation">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+            <span>Symulacja</span>
+          </button>
+          <button class="panel-tab" data-panel="plan">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <span>Plan działań</span>
+            <span class="plan-task-count" id="plan-count">4</span>
+          </button>
+        </div>
+
+        <!-- ═══ SYTUACJA PANEL ═══ -->
+        <div class="panel-content active" id="panel-situation">
+          <div class="nlp-block">
+            <p>Stężenie PM2.5 przekroczyło normę WHO <strong>13-krotnie</strong> w centrum Wrocławia.</p>
+            <p>Prognozowany szczyt: <strong>T+8h</strong> · wiatr SW 4 m/s utrzymuje zanieczyszczenie.</p>
+          </div>
+
+          <div class="consequence-grid">
+            <div class="consequence-card">
+              <div class="cq-icon cq-buildings">💨</div>
+              <div class="cq-body">
+                <div class="cq-value">AQI 178</div>
+                <div class="cq-desc">Niezdrowy dla grup wrażliwych</div>
+              </div>
+            </div>
+            <div class="consequence-card">
+              <div class="cq-icon cq-roads">👥</div>
+              <div class="cq-body">
+                <div class="cq-value">~45 000 osób</div>
+                <div class="cq-desc">narażonych w strefie</div>
+              </div>
+            </div>
+            <div class="consequence-card">
+              <div class="cq-icon cq-infra">🏫</div>
+              <div class="cq-body">
+                <div class="cq-value">7 szkół i przedszkoli</div>
+                <div class="cq-desc">w strefie krytycznej i narażenia</div>
+              </div>
+            </div>
+            <div class="consequence-card">
+              <div class="cq-icon cq-loss">🏥</div>
+              <div class="cq-body">
+                <div class="cq-value">2 szpitale</div>
+                <div class="cq-desc">w strefie monitorowania</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AQI timeseries chart -->
+          <div class="timeseries-section">
+            <div class="timeseries-header">
+              <span class="timeseries-title">Indeks jakości powietrza (AQI) — prognoza 24h</span>
+            </div>
+            <canvas id="timeseries-canvas" width="600" height="120"></canvas>
+          </div>
+
+          <div class="panel-switch-link">
+            <button class="btn-ghost" id="link-to-simulation">→ Uruchom symulację</button>
+          </div>
+        </div>
+
+        <!-- ═══ SYMULACJA PANEL ═══ -->
+        <div class="panel-content" id="panel-simulation">
+          <div class="panel-section-header">
+            <span class="psh-title">What-if</span>
+            <span class="psh-note">Parametry z View Schema · Threat: Air Quality Risk</span>
+          </div>
+
+          <!-- Scenario Card 1: Wind change -->
+          <div class="scenario-card" id="scenario-wind">
+            <div class="sc-header">
+              <div class="sc-icon">💨</div>
+              <div class="sc-info">
+                <div class="sc-title">Zmiana wiatru</div>
+              </div>
+              <div class="sc-status" id="sc-status-wind"></div>
+            </div>
+            <div class="sc-params" id="sc-params-wind">
+              <label class="sc-param-label">wind_speed_ms</label>
+              <div class="sc-slider-row">
+                <span class="sc-range-label">0</span>
+                <input type="range" class="slider-input" id="slider-wind-speed" min="0" max="20" value="4">
+                <span class="sc-range-label">20</span>
+                <span class="slider-value" id="slider-wind-speed-val">4 m/s</span>
+              </div>
+              <label class="sc-param-label" style="margin-top:10px;">wind_direction</label>
+              <div class="sc-input-row">
+                <select class="form-input" id="select-wind-dir" style="width:auto;">
+                  <option value="N">N</option>
+                  <option value="NE">NE</option>
+                  <option value="E">E</option>
+                  <option value="SE">SE</option>
+                  <option value="S">S</option>
+                  <option value="SW" selected>SW</option>
+                  <option value="W">W</option>
+                  <option value="NW">NW</option>
+                </select>
+              </div>
+            </div>
+            <div class="sc-results hidden" id="sc-results-wind">
+              <div class="sc-result-summary">✓ AQI: 134 (−44) · Zasięg: −35% · Narażonych: ~29 000</div>
+              <button class="btn-ghost btn-sm sc-show-map" data-scenario="wind">Pokaż na mapie</button>
+            </div>
+            <!-- Computing overlay -->
+            <div class="sc-computing-overlay hidden" id="sc-overlay-wind">
+              <div class="sc-overlay-spinner"></div>
+              <div class="sc-overlay-text" id="sc-overlay-text-wind">Pobieranie danych...</div>
+              <div class="sc-overlay-bar"><div class="sc-overlay-fill" id="sc-overlay-fill-wind"></div></div>
+            </div>
+            <button class="btn-primary sc-compute" id="btn-compute-wind">
+              ▶ Oblicz
+              <span class="compute-time">~1 min</span>
+            </button>
+          </div>
+
+          <!-- Scenario Card 2: Emission reduction -->
+          <div class="scenario-card" id="scenario-emission">
+            <div class="sc-header">
+              <div class="sc-icon">🏭</div>
+              <div class="sc-info">
+                <div class="sc-title">Redukcja emisji</div>
+              </div>
+              <div class="sc-status" id="sc-status-emission"></div>
+            </div>
+            <div class="sc-params" id="sc-params-emission">
+              <label class="sc-param-label">emission_factor</label>
+              <div class="sc-slider-row">
+                <span class="sc-range-label">-100%</span>
+                <input type="range" class="slider-input" id="slider-emission" min="-100" max="0" value="0">
+                <span class="sc-range-label">0%</span>
+                <span class="slider-value" id="slider-emission-val">0%</span>
+              </div>
+            </div>
+            <div class="sc-results hidden" id="sc-results-emission">
+              <div class="sc-result-summary">✓ AQI: 156 (−22) · Zasięg: −15% · Narażonych: ~38 000</div>
+              <button class="btn-ghost btn-sm sc-show-map" data-scenario="emission">Pokaż na mapie</button>
+            </div>
+            <!-- Computing overlay -->
+            <div class="sc-computing-overlay hidden" id="sc-overlay-emission">
+              <div class="sc-overlay-spinner"></div>
+              <div class="sc-overlay-text" id="sc-overlay-text-emission">Pobieranie danych...</div>
+              <div class="sc-overlay-bar"><div class="sc-overlay-fill" id="sc-overlay-fill-emission"></div></div>
+            </div>
+            <button class="btn-primary sc-compute" id="btn-compute-emission">
+              ▶ Oblicz
+              <span class="compute-time">~2 min</span>
+            </button>
+          </div>
+
+          <!-- Comparison row (appears after ≥1 computed) -->
+          <div class="comparison-row hidden" id="comparison-row">
+            <div class="comp-header">Porównanie: Bazowy vs Scenariusz</div>
+            <div class="comp-grid">
+              <div class="comp-metric">
+                <span class="comp-metric-label">AQI</span>
+                <span class="comp-metric-base">178</span>
+                <span class="comp-metric-arrow">→</span>
+                <span class="comp-metric-new" id="comp-aqi">—</span>
+              </div>
+              <div class="comp-metric">
+                <span class="comp-metric-label">Narażeni</span>
+                <span class="comp-metric-base">~45 000</span>
+                <span class="comp-metric-arrow">→</span>
+                <span class="comp-metric-new" id="comp-population">—</span>
+              </div>
+              <div class="comp-metric">
+                <span class="comp-metric-label">Zasięg</span>
+                <span class="comp-metric-base">100%</span>
+                <span class="comp-metric-arrow">→</span>
+                <span class="comp-metric-new" id="comp-coverage">—</span>
+              </div>
+            </div>
+            <button class="btn-primary btn-sm" id="btn-use-as-basis">Użyj jako podstawę planu →</button>
+          </div>
+        </div>
+
+        <!-- ═══ PLAN PANEL ═══ -->
+        <div class="panel-content" id="panel-plan">
+          <div class="panel-section-header">
+            <span class="psh-title">Plan działań</span>
+            <span class="psh-note" id="plan-basis-note">Podstawa: prognoza bazowa</span>
+          </div>
+
+          <div class="task-list" id="task-list">
+            <!-- Rendered by JS -->
+          </div>
+
+          <button class="add-task-link" id="btn-add-task">+ Dodaj zadanie</button>
+        </div>
+
+        <!-- Decision footer (visible only when Plan tab active) -->
+        <div class="decision-footer hidden" id="decision-footer">
+          <div class="decision-meta">
+            <span class="decision-evt">EVT-2026-04-021</span>
+            <span class="decision-tasks-count" id="tasks-count">0 / 4 zadań wybranych</span>
+          </div>
+          <button class="btn-approve" id="btn-approve" disabled>
+            Zatwierdź decyzję →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ APPROVAL OVERLAY ═══ -->
+  <div class="approval-overlay hidden" id="approval-overlay">
+    <div class="approval-card">
+      <div class="approval-spinner"></div>
+      <div class="approval-steps" id="approval-steps">
+        <div class="approval-step" data-idx="0">
+          <span class="as-icon">○</span>
+          <span class="as-text">Zapisywanie decyzji...</span>
+        </div>
+        <div class="approval-step" data-idx="1">
+          <span class="as-icon">○</span>
+          <span class="as-text">Generowanie mapy decyzyjnej...</span>
+        </div>
+        <div class="approval-step" data-idx="2">
+          <span class="as-icon">○</span>
+          <span class="as-text">Kompilacja raportu PDF...</span>
+        </div>
+        <div class="approval-step" data-idx="3">
+          <span class="as-icon">○</span>
+          <span class="as-text">Gotowe ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="threat-detail-aqi.js"></script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

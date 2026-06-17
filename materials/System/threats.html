@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deceris — Zagrożenia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="threats.css">
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-label="Deceris">
+        <circle cx="16" cy="16" r="14" stroke="#4F98A3" stroke-width="2"/>
+        <path d="M10 20 Q16 8 22 20" stroke="#4F98A3" stroke-width="2" fill="none"/>
+        <circle cx="16" cy="15" r="2" fill="#4F98A3"/>
+      </svg>
+      <span class="logo-text">Deceris</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="monitor.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Monitor</span>
+      </a>
+      <a href="#" class="nav-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Threats</span>
+        <span class="nav-badge" id="threat-count">3</span>
+      </a>
+      <a href="analysis.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span>Analiza</span>
+      </a>
+      <a href="history.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>Historia</span>
+      </a>
+      <a href="#" class="nav-item nav-disabled">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span>Źródła danych</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">PS</div>
+        <div class="user-meta">
+          <span class="user-name">Paweł S.</span>
+          <span class="user-role">Administrator</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">Threats</h1>
+        <span class="threat-counter">3 aktywne</span>
+      </div>
+      <div class="topbar-right">
+        <div class="filter-bar">
+          <button class="filter-btn active" data-filter="all">Wszystkie</button>
+          <button class="filter-btn" data-filter="active">Aktywne</button>
+          <button class="filter-btn" data-filter="acknowledged">Potwierdzone</button>
+          <button class="filter-btn" data-filter="resolved">Zamknięte</button>
+        </div>
+        <div class="sort-control">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5h10M11 9h7M11 13h4"/><path d="M3 17l3 3 3-3"/><line x1="6" y1="18" x2="6" y2="7"/></svg>
+          <select class="select-sm" id="sort-select">
+            <option value="severity">Severity ↓</option>
+            <option value="time">Czas do peak</option>
+            <option value="impact">Impact ↓</option>
+          </select>
+        </div>
+        <button class="btn-ghost" id="btn-sound">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- NOTIFICATION BANNER — eskalacja timeout -->
+    <div class="escalation-banner" id="escalation-banner">
+      <div class="banner-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      </div>
+      <div class="banner-content">
+        <strong>Eskalacja timeout</strong> — EVT-2026-04-003 (Nysa Kłodzka) nie acknowledged od 15 min. Eskalacja do KDR Woj. Dolnośląskie.
+      </div>
+      <button class="banner-action" id="btn-ack-banner">Acknowledge teraz</button>
+      <button class="banner-dismiss" id="btn-dismiss-banner">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- ALERT CARDS -->
+    <div class="threats-content">
+      <!-- KPI summary row -->
+      <div class="threat-kpis">
+        <div class="kpi-card">
+          <div class="kpi-value kpi-critical">3</div>
+          <div class="kpi-label">Aktywne alerty</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">7</div>
+          <div class="kpi-label">Aktywne zdarzenia</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value kpi-warning">1</div>
+          <div class="kpi-label">Oczekuje acknowledge</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">36h</div>
+          <div class="kpi-label">Następna zmiana</div>
+        </div>
+      </div>
+
+      <!-- Alert list -->
+      <div class="alert-list" id="alert-list">
+
+        <!-- ALERT 1 — River Event, L3, active, not ack'd -->
+        <div class="alert-card alert-unacked" data-severity="3" data-status="active" id="alert-evt003">
+          <div class="alert-left">
+            <div class="alert-severity-strip severity-strip-l3"></div>
+            <div class="alert-main">
+              <div class="alert-header-row">
+                <span class="severity-badge severity-l3">L3</span>
+                <span class="alert-event-id">EVT-2026-04-003</span>
+                <span class="alert-type-tag">Flood Risk</span>
+                <span class="alert-status-tag status-active">
+                  <span class="status-pulse"></span>
+                  Active
+                </span>
+                <span class="alert-ack-warning">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                  Oczekuje acknowledge
+                </span>
+              </div>
+              <div class="alert-title">Nysa Kłodzka — fala powodziowa</div>
+              <div class="alert-meta-row">
+                <div class="alert-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                  Następna zmiana: <strong>T+36h</strong>
+                </div>
+                <div class="alert-meta-item">
+                  <span class="meta-key">station_name</span>
+                  <strong>Kłodzko km 34.2</strong>
+                </div>
+                <div class="alert-meta-item meta-impact">
+                  <span class="meta-key">water_level</span>
+                  <strong>212 cm</strong>
+                  <span class="meta-trend trend-up">↑</span>
+                </div>
+                <div class="alert-meta-item">
+                  <span class="meta-key">group</span>
+                  3 zdarzenia
+                </div>
+              </div>
+              <!-- Mini gauge sparklines -->
+              <div class="alert-gauges">
+                <div class="mini-gauge">
+                  <span class="mini-gauge-dot dot-l1"></span>
+                  <span class="mini-gauge-name">Bystrzyca_12.4</span>
+                  <div class="mini-sparkline" data-peak="12" data-level="1"></div>
+                  <span class="mini-gauge-val"><span class="prop-value">156</span><span class="prop-unit">cm</span></span>
+                </div>
+                <div class="mini-gauge">
+                  <span class="mini-gauge-dot dot-l3"></span>
+                  <span class="mini-gauge-name">Kłodzko_34.2</span>
+                  <div class="mini-sparkline" data-peak="36" data-level="3"></div>
+                  <span class="mini-gauge-val"><span class="prop-value">212</span><span class="prop-unit">cm</span></span>
+                </div>
+                <div class="mini-gauge">
+                  <span class="mini-gauge-dot dot-l2"></span>
+                  <span class="mini-gauge-name">Bardo_52.7</span>
+                  <div class="mini-sparkline" data-peak="48" data-level="2"></div>
+                  <span class="mini-gauge-val"><span class="prop-value">195</span><span class="prop-unit">cm</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="alert-right">
+            <div class="alert-time-info">
+              <span class="time-created">Utworzony 4h temu</span>
+              <span class="time-updated">Akt. 2 min temu</span>
+            </div>
+            <div class="alert-actions">
+              <button class="btn-outline btn-sm alert-ack-btn" data-alert="evt003">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+                Acknowledge
+              </button>
+              <a href="threat-detail.html" class="btn-primary btn-sm alert-open-btn">
+                Otwórz Threat →
+              </a>
+              <a href="analysis.html?threat=evt003&session=new" class="btn-ghost btn-sm">Analizuj →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ALERT 2 — River Event, L2, active, acknowledged -->
+        <div class="alert-card" data-severity="2" data-status="acknowledged" id="alert-evt002">
+          <div class="alert-left">
+            <div class="alert-severity-strip severity-strip-l2"></div>
+            <div class="alert-main">
+              <div class="alert-header-row">
+                <span class="severity-badge severity-l2">L2</span>
+                <span class="alert-event-id">EVT-2026-04-002</span>
+                <span class="alert-type-tag">Flood Risk</span>
+                <span class="alert-status-tag status-acked">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+                  Potwierdzone
+                </span>
+              </div>
+              <div class="alert-title">Bóbr — wezbranie roztopowe</div>
+              <div class="alert-meta-row">
+                <div class="alert-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                  Następna zmiana: <strong>T+18h</strong>
+                </div>
+                <div class="alert-meta-item">
+                  <span class="meta-key">station_name</span>
+                  <strong>Żagań km 45.1</strong>
+                </div>
+                <div class="alert-meta-item meta-impact">
+                  <span class="meta-key">water_level</span>
+                  <strong>178 cm</strong>
+                  <span class="meta-trend trend-up">↑</span>
+                </div>
+                <div class="alert-meta-item">
+                  <span class="meta-key">group</span>
+                  2 zdarzenia
+                </div>
+              </div>
+              <div class="alert-gauges">
+                <div class="mini-gauge">
+                  <span class="mini-gauge-dot dot-l2"></span>
+                  <span class="mini-gauge-name">Żagań 45.1</span>
+                  <div class="mini-sparkline" data-peak="18" data-level="2"></div>
+                  <span class="mini-gauge-val">178cm</span>
+                </div>
+                <div class="mini-gauge">
+                  <span class="mini-gauge-dot dot-l1"></span>
+                  <span class="mini-gauge-name">Szprotawa 62.3</span>
+                  <div class="mini-sparkline" data-peak="28" data-level="1"></div>
+                  <span class="mini-gauge-val">162cm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="alert-right">
+            <div class="alert-time-info">
+              <span class="time-created">Utworzony 8h temu</span>
+              <span class="time-updated">Akt. 15 min temu</span>
+            </div>
+            <div class="alert-actions">
+              <span class="ack-done">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+                Acked — M. Kowalski
+              </span>
+              <a href="threat-detail.html" class="btn-primary btn-sm alert-open-btn">
+                Otwórz Threat →
+              </a>
+              <a href="analysis.html?threat=evt002&session=new" class="btn-ghost btn-sm">Analizuj →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ALERT 3 — Single gauge, L1, watch -->
+        <div class="alert-card" data-severity="1" data-status="active" id="alert-evt001">
+          <div class="alert-left">
+            <div class="alert-severity-strip severity-strip-l1"></div>
+            <div class="alert-main">
+              <div class="alert-header-row">
+                <span class="severity-badge severity-l1">L1</span>
+                <span class="alert-event-id">EVT-2026-04-001</span>
+                <span class="alert-type-tag tag-single">Obserwowany</span>
+                <span class="alert-status-tag status-active">
+                  <span class="status-pulse pulse-slow"></span>
+                  Monitoring
+                </span>
+              </div>
+              <div class="alert-title">Kwisa — przekroczenie stanu ostrzegawczego</div>
+              <div class="alert-meta-row">
+                <div class="alert-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                  Następna zmiana: <strong>T+52h</strong>
+                </div>
+                <div class="alert-meta-item">
+                  <span class="meta-key">station_name</span>
+                  <strong>Leśna km 8.7</strong>
+                </div>
+                <div class="alert-meta-item">
+                  <span class="meta-key">water_level</span>
+                  <strong>158 cm</strong>
+                  <span class="meta-trend trend-flat">→</span>
+                </div>
+              </div>
+              <div class="alert-gauges">
+                <div class="mini-gauge">
+                  <span class="mini-gauge-dot dot-l1"></span>
+                  <span class="mini-gauge-name">Leśna 8.7</span>
+                  <div class="mini-sparkline" data-peak="52" data-level="1"></div>
+                  <span class="mini-gauge-val">158cm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="alert-right">
+            <div class="alert-time-info">
+              <span class="time-created">Utworzony 12h temu</span>
+              <span class="time-updated">Akt. 1h temu</span>
+            </div>
+            <div class="alert-actions">
+              <span class="watch-label">Auto-monitoring</span>
+              <a href="threat-detail.html" class="btn-ghost btn-sm alert-open-btn">
+                Otwórz Threat →
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- DEMO: Air Quality Risk card -->
+        <div class="alert-card alert-demo" data-severity="2" data-status="active" id="alert-aqi021">
+          <div class="alert-left">
+            <div class="alert-severity-strip" style="background:var(--l2)"></div>
+            <div class="alert-main">
+              <div class="alert-header-row">
+                <span class="severity-badge severity-l2">L2</span>
+                <span class="alert-event-id">EVT-2026-04-021</span>
+                <span class="alert-type-tag" style="background:var(--l2-bg);color:var(--l2)">Air Quality Risk</span>
+                <span class="alert-status-tag status-active">
+                  <span class="status-pulse"></span>
+                  Aktywne
+                </span>
+                <span class="demo-badge-inline">DEMO</span>
+              </div>
+              <div class="alert-title">Wrocław Centrum — jakość powietrza AQI 178</div>
+              <div class="alert-meta-row">
+                <div class="alert-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                  Następna zmiana: <strong>T+8h</strong>
+                </div>
+                <div class="alert-meta-item">
+                  <span class="meta-key">aqi</span>
+                  <strong>178 AQI</strong>
+                  <span class="meta-trend trend-up">↑</span>
+                </div>
+                <div class="alert-meta-item">
+                  <span class="meta-key">population_at_risk</span>
+                  <strong>~45 000 osób</strong>
+                </div>
+              </div>
+              <div class="alert-gauges">
+                <div class="mini-gauge">
+                  <span class="mini-gauge-dot" style="background:var(--l2)"></span>
+                  <span class="mini-gauge-name">Centrum</span>
+                  <div class="mini-sparkline" data-peak="8" data-level="2"></div>
+                  <span class="mini-gauge-val">178 AQI</span>
+                </div>
+                <div class="mini-gauge">
+                  <span class="mini-gauge-dot" style="background:var(--l1)"></span>
+                  <span class="mini-gauge-name">Krzyki</span>
+                  <div class="mini-sparkline" data-peak="10" data-level="1"></div>
+                  <span class="mini-gauge-val">134 AQI</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="alert-right">
+            <div class="alert-time-info">
+              <span class="time-created">Utworzony 3h temu</span>
+              <span class="time-updated">Akt. 30 min temu</span>
+            </div>
+            <div class="alert-actions">
+              <a href="threat-detail-aqi.html" class="btn-primary btn-sm alert-open-btn">
+                Otwórz Threat →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="threats.js"></script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

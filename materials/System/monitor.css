@@ -1,0 +1,836 @@
+/* ═══════════════════════════════════════════
+   DECERIS — Monitor Dashboard
+   ═══════════════════════════════════════════ */
+
+/* ── TOPBAR OVERRIDES ── */
+.monitor-title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.region-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--teal);
+  background: var(--teal-dim);
+  padding: 3px 10px;
+  border-radius: 99px;
+  letter-spacing: 0.01em;
+}
+
+/* ── KPI ROW ── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 16px 20px 0;
+}
+
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+}
+
+.kpi-clickable {
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.kpi-clickable:hover {
+  border-color: var(--l3);
+  background: var(--l3-bg);
+}
+
+.kpi-arrow {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  color: var(--text-faint);
+  transition: color var(--transition);
+}
+
+.kpi-clickable:hover .kpi-arrow {
+  color: var(--l3);
+}
+
+.kpi-value {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-teal { color: var(--teal); }
+.kpi-danger { color: var(--l3); }
+
+.kpi-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+}
+
+/* ── MONITOR BODY ── */
+.monitor-body {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  padding: 16px 20px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.map-section {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-section .panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+}
+
+.side-panel .panel {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+/* ── MAP ── */
+.monitor-map-container {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #0f1018;
+  overflow: hidden;
+}
+
+#monitor-map-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Map tooltip */
+.map-tooltip {
+  display: none;
+  position: absolute;
+  z-index: 20;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text);
+  white-space: nowrap;
+  line-height: 1.6;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.map-tooltip.visible {
+  display: block;
+}
+
+/* Map mini card */
+.map-mini-card {
+  display: none;
+  position: absolute;
+  z-index: 25;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  width: 210px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+}
+
+.map-mini-card.visible {
+  display: block;
+}
+
+.mini-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.mini-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.mini-card-severity {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.mini-card-severity.mc-l2 {
+  background: var(--l2-bg);
+  color: var(--l2);
+  border: 1px solid var(--l2);
+}
+
+.mini-card-severity.mc-l3 {
+  background: var(--l3-bg);
+  color: var(--l3);
+  border: 1px solid var(--l3);
+}
+
+.mini-card-level {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.mini-card-sparkline {
+  width: 100%;
+  height: 40px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.mini-card-link {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--teal);
+  text-decoration: none;
+  padding: 6px 0 2px;
+  border-top: 1px solid var(--border);
+  transition: color var(--transition);
+}
+
+.mini-card-link:hover {
+  color: var(--teal-hover);
+}
+
+/* Toggle label */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--teal);
+  cursor: pointer;
+}
+
+/* ── THREAT LIST ── */
+.threat-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.threat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  text-decoration: none;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+  cursor: pointer;
+}
+
+.threat-item:last-child {
+  border-bottom: none;
+}
+
+.threat-item:hover {
+  background: var(--surface-2);
+}
+
+.threat-severity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.threat-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.threat-header-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.threat-level-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.tl-l1 { background: var(--l1-bg); color: var(--l1); }
+.tl-l2 { background: var(--l2-bg); color: var(--l2); }
+.tl-l3 { background: var(--l3-bg); color: var(--l3); }
+
+.threat-river {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.threat-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.threat-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-faint);
+}
+
+.threat-arrow {
+  color: var(--text-faint);
+  flex-shrink: 0;
+  transition: color var(--transition);
+}
+
+.threat-item:hover .threat-arrow {
+  color: var(--teal);
+}
+
+/* ── PREDICTION LIST ── */
+.prediction-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.prediction-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+
+.prediction-item:last-child {
+  border-bottom: none;
+}
+
+.pred-time {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  min-width: 36px;
+}
+
+.pred-gauge {
+  font-size: 12px;
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pred-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  min-width: 44px;
+  text-align: right;
+}
+
+.pred-delta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  min-width: 56px;
+  text-align: right;
+}
+
+.delta-up { color: var(--l3); }
+.delta-down { color: var(--success); }
+.delta-flat { color: var(--text-faint); }
+
+.pred-severity {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  min-width: 26px;
+  text-align: center;
+}
+
+.ps-l1 { background: var(--l1-bg); color: var(--l1); }
+.ps-l2 { background: var(--l2-bg); color: var(--l2); }
+.ps-l3 { background: var(--l3-bg); color: var(--l3); }
+
+/* ── DATA SOURCES ── */
+.sources-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.source-item:nth-last-child(-n+2) {
+  border-bottom: none;
+}
+
+/* Vertical borders between columns */
+.source-item:nth-child(odd) {
+  border-right: 1px solid var(--border);
+}
+
+.source-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.source-dot.online {
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(90, 173, 109, 0.4);
+}
+
+.source-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.source-meta {
+  font-size: 10px;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  width: 100%;
+  padding-left: 14px;
+  margin-top: -2px;
+}
+
+/* ── SCROLLBAR STYLING ── */
+.side-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.side-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.side-panel::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.side-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* ── MAP LEGEND (override from style.css) ── */
+.monitor-map-container .map-legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 10;
+}
+
+.legend-note {
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-top: 6px;
+  font-style: italic;
+}
+.mini-card-link-secondary {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-top: 4px;
+}
+.mini-card-link-secondary:hover { color: var(--teal); }
+.pred-unit { font-size: 10px; color: var(--text-faint); margin-left: 1px; }
+
+/* ── MODE TOGGLE ── */
+.mode-toggle {
+  display: flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 2px;
+  gap: 2px;
+}
+.mode-btn {
+  padding: 4px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: all 180ms ease;
+  font-family: var(--font-body);
+}
+.mode-btn.active {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+/* ── GIS TOOLBAR ── */
+.gis-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.gis-tool {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--text-faint);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 180ms ease;
+  position: relative;
+}
+.gis-tool:hover { background: var(--surface-2); color: var(--text); }
+.gis-tool.active { background: var(--teal-dim); color: var(--teal); }
+.gis-tool-separator { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+/* Tooltip on hover */
+.gis-tool::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-3);
+  color: var(--text);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+  z-index: 100;
+}
+.gis-tool:hover::after { opacity: 1; }
+
+/* ── GIS STATUSBAR ── */
+.gis-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 6px 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.gis-statusbar strong { color: var(--text); }
+.gis-status-hint { color: var(--text-faint); font-style: italic; flex: 1; }
+
+/* Legend toggle */
+.legend-toggle {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+.legend-mode-btn {
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: all 140ms ease;
+  letter-spacing: 0.02em;
+}
+.legend-mode-btn:hover { color: var(--text-muted); border-color: var(--border-hover); }
+.legend-mode-btn.active {
+  background: var(--surface-3);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.legend-shape-icon {
+  font-size: 11px;
+  width: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.legend-item-demo { opacity: 0.65; }
+.legend-demo-tag {
+  font-size: 8px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-faint);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  padding: 0 3px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+/* DEMO threat styles */
+.threat-item-demo {
+  opacity: 0.8;
+  border-left: 2px dashed var(--border-hover);
+  padding-left: 10px;
+  margin-left: -2px;
+}
+.threat-item-demo:hover { opacity: 1; }
+.threat-demo-badge {
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  background: var(--surface-3);
+  border: 1px solid var(--border-hover);
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+.threat-shape-icon {
+  position: absolute;
+  font-size: 8px;
+  color: #0C0D10;
+  font-weight: 900;
+  line-height: 1;
+  transform: translate(-50%, -50%) scale(0.7);
+}
+.threat-severity-dot { position: relative; }
+
+/* DEMO event feed styles */
+.prediction-demo {
+  opacity: 0.75;
+  border-left: 2px dashed var(--border-hover);
+  padding-left: 6px;
+  margin-left: -6px;
+}
+.pred-demo-tag {
+  font-size: 8px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-faint);
+  background: var(--surface-3);
+  border: 1px solid var(--border-hover);
+  padding: 0px 4px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+/* GIS sidebar content */
+.gis-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 12px;
+}
+.gis-empty-hint { font-size: 11px; color: var(--text-faint); opacity: 0.7; }
+
+.gis-obj-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.gis-obj-icon { font-size: 14px; flex-shrink: 0; }
+.gis-obj-info { flex: 1; }
+.gis-obj-name { display: block; color: var(--text); font-weight: 500; }
+.gis-obj-meta { display: block; color: var(--text-faint); font-family: var(--font-mono); font-size: 11px; }
+.gis-obj-delete { background: none; border: none; color: var(--text-faint); cursor: pointer; font-size: 16px; padding: 0 4px; }
+.gis-obj-delete:hover { color: var(--danger); }
+
+/* Map layer toggles */
+.map-layers-list { padding: 8px 0; }
+.layer-toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background var(--transition);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.layer-toggle-item:hover { background: var(--surface-2); }
+.layer-toggle-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--teal); }
+.layer-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.layer-label { flex: 1; }
+.layer-badge {
+  font-size: 10px;
+  color: var(--text-faint);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 99px;
+}
+.panel-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+
+/* ── WHAT-IF PANEL ── */
+.whatif-empty { padding: 16px; text-align: center; color: var(--text-faint); font-size: 12px; }
+.whatif-empty-icon { font-size: 24px; margin-bottom: 8px; }
+.whatif-empty-text { margin-bottom: 4px; }
+.whatif-empty-hint { font-size: 10px; opacity: 0.7; }
+
+.whatif-form { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.whatif-field label { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.whatif-field select,
+.whatif-field input[type="number"] {
+  width: 100%; background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-primary); border-radius: 4px; padding: 4px 8px; font-size: 12px;
+  font-family: var(--font-body);
+  box-sizing: border-box;
+}
+.whatif-field select:focus,
+.whatif-field input[type="number"]:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+.whatif-params { display: flex; flex-direction: column; gap: 6px; }
+.wf-param-row { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.wf-param-label { color: var(--text-muted); width: 100px; flex-shrink: 0; }
+.wf-param-row input[type="range"] { flex: 1; accent-color: var(--teal); }
+.wf-param-row span:last-child { width: 28px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text); }
+.whatif-run-btn { width: 100%; justify-content: center; margin-top: 4px; }
+
+.whatif-running { padding: 12px; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.wf-spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 4px;
+}
+.wf-step { font-size: 11px; color: var(--text-faint); }
+.wf-step.active { color: var(--teal); font-weight: 500; }
+.wf-step.done { color: var(--text-muted); }
+.wf-step.done::before { content: '\2713 '; color: #4CAF80; }
+
+.whatif-result { padding: 12px; }
+.wf-result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.wf-result-badge {
+  font-size: 10px; font-weight: 700;
+  background: rgba(79,152,163,0.2); color: var(--teal);
+  padding: 2px 6px; border-radius: 3px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.wf-result-ts { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--text-faint); }
+.wf-result-metrics { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.wf-metric {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 6px; background: var(--surface-2); border-radius: 3px;
+}
+.wf-m-label { font-size: 11px; color: var(--text-muted); }
+.wf-m-val { font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+.wf-m-val.green { color: #4CAF80; }
+.wf-delta { font-size: 10px; margin-left: 4px; }
+.wf-delta.red { color: #D95050; }
+.wf-delta.green { color: #4CAF80; }
+.wf-result-actions { display: flex; gap: 6px; }
+.wf-result-actions .btn-ghost,
+.wf-result-actions .btn-outline { flex: 1; justify-content: center; font-size: 11px; }
+
+.panel-count-success { background: rgba(76,175,128,0.15) !important; color: #4CAF80 !important; border-color: rgba(76,175,128,0.3) !important; }
+.panel-count-active { background: rgba(79,152,163,0.15) !important; color: var(--teal) !important; border-color: rgba(79,152,163,0.3) !important; }
+
+/* sidebar-panel: a panel variant used inside sidebar-gis-content */
+.sidebar-panel { flex-shrink: 0; }

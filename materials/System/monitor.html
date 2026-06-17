@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deceris — Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="monitor.css">
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-label="Deceris">
+        <circle cx="16" cy="16" r="14" stroke="#4F98A3" stroke-width="2"/>
+        <path d="M10 20 Q16 8 22 20" stroke="#4F98A3" stroke-width="2" fill="none"/>
+        <circle cx="16" cy="15" r="2" fill="#4F98A3"/>
+      </svg>
+      <span class="logo-text">Deceris</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="monitor.html" class="nav-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Monitor</span>
+      </a>
+      <a href="threats.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Zagrożenia</span>
+        <span class="nav-badge" id="threat-count">3</span>
+      </a>
+      <a href="analysis.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span>Analiza</span>
+      </a>
+      <a href="history.html" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>Historia</span>
+      </a>
+      <a href="#" class="nav-item nav-disabled">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span>Źródła danych</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">PS</div>
+        <div class="user-meta">
+          <span class="user-name">Paweł S.</span>
+          <span class="user-role">Administrator</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="monitor-title">Monitor</h1>
+        <span class="region-badge">Dolnośląskie</span>
+      </div>
+      <div class="topbar-right">
+        <div class="update-badge">
+          <span class="pulse-dot"></span>
+          <span>Ostatnia aktualizacja: 2 min temu</span>
+        </div>
+        <div class="mode-toggle">
+          <button class="mode-btn active" data-mode="monitor">Monitor</button>
+          <button class="mode-btn" data-mode="gis">GIS</button>
+        </div>
+        <button class="btn-ghost" id="btn-refresh">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          Odśwież
+        </button>
+      </div>
+    </header>
+
+    <!-- GIS TOOLBAR (hidden by default) -->
+    <div class="gis-toolbar" id="gis-toolbar" style="display:none">
+      <button class="gis-tool active" data-tool="select" title="Zaznaczenie">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-7 1-4 7z"/></svg>
+      </button>
+      <button class="gis-tool" data-tool="line" title="Rysuj linię">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+      </button>
+      <button class="gis-tool" data-tool="polygon" title="Rysuj poligon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 22,20 2,20"/></svg>
+      </button>
+      <button class="gis-tool" data-tool="circle" title="Rysuj okrąg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+      </button>
+      <button class="gis-tool" data-tool="marker" title="Dodaj marker">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </button>
+      <div class="gis-tool-separator"></div>
+      <button class="gis-tool" data-tool="measure-dist" title="Pomiar odległości">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2v20"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <button class="gis-tool" data-tool="measure-area" title="Pomiar powierzchni">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+      </button>
+      <div class="gis-tool-separator"></div>
+      <button class="gis-tool" data-tool="delete" title="Usuń zaznaczony">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14H6L5,6"/><path d="M10,11v6M14,11v6"/></svg>
+      </button>
+      <button class="gis-tool" data-tool="undo" title="Cofnij">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+      </button>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <div class="monitor-body">
+      <!-- LEFT: MAP -->
+      <div class="map-section">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Mapa zagrożeń <span id="active-threat-count">· 3 aktywne</span></div>
+          </div>
+          <div class="monitor-map-container" id="map-container">
+            <canvas id="monitor-map-canvas"></canvas>
+            <!-- Tooltip (positioned via JS) -->
+            <div class="map-tooltip" id="map-tooltip"></div>
+            <!-- Mini card overlay (positioned via JS) -->
+            <div class="map-mini-card" id="map-mini-card">
+              <div class="mini-card-header">
+                <span class="mini-card-name" id="mc-name"></span>
+                <span class="mini-card-severity" id="mc-severity"></span>
+              </div>
+              <div class="mini-card-level" id="mc-level"></div>
+              <canvas class="mini-card-sparkline" id="mc-sparkline" width="180" height="40"></canvas>
+              <a href="threats.html" class="mini-card-link" data-target="threats">Otwórz w Threats →</a>
+              <a href="threat-detail.html" class="mini-card-link-secondary">Analizuj →</a>
+            </div>
+            <!-- Legend -->
+            <div class="map-legend" id="map-legend">
+              <div class="legend-toggle">
+                <button class="legend-mode-btn active" data-legend="severity">Severity</button>
+                <button class="legend-mode-btn" data-legend="type">Typ</button>
+              </div>
+              <div class="legend-items" id="legend-items">
+                <!-- Renderowane przez JS -->
+              </div>
+              <div class="legend-note">Tylko aktywne zagrożenia</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: SIDE PANEL -->
+      <div class="side-panel">
+        <div id="sidebar-monitor-content">
+        <!-- Aktywne zagrożenia -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Aktywne zagrożenia <span id="active-threat-count">· 3</span></div>
+          </div>
+          <div class="threat-list" id="threat-list">
+            <!-- Renderowane dynamicznie przez monitor.js -->
+          </div>
+        </div>
+
+        <!-- Data-driven: fed from THREAT_OUTPUT properties.metric_primary -->
+        <!-- Ostatnie predykcje -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Ostatnie zdarzenia <span>· pipeline</span></div>
+          </div>
+          <div class="prediction-list" id="prediction-list">
+            <!-- Renderowane dynamicznie z GAUGES w monitor.js -->
+          </div>
+        </div>
+
+        <!-- Status źródeł danych -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Status źródeł danych</div>
+          </div>
+          <div class="sources-grid">
+            <div class="source-item">
+              <span class="source-dot online"></span>
+              <span class="source-name">IMGW SHAPI</span>
+              <span class="source-meta">Online · Akt. 2 min temu</span>
+            </div>
+            <div class="source-item">
+              <span class="source-dot online"></span>
+              <span class="source-name">NMT 1m</span>
+              <span class="source-meta">Online · v2024.1</span>
+            </div>
+            <div class="source-item">
+              <span class="source-dot online"></span>
+              <span class="source-name">BDOT10k</span>
+              <span class="source-meta">Online · v2025.2</span>
+            </div>
+            <div class="source-item">
+              <span class="source-dot online"></span>
+              <span class="source-name">ISOK mapy</span>
+              <span class="source-meta">Online · v2024.1</span>
+            </div>
+            <div class="source-item">
+              <span class="source-dot online"></span>
+              <span class="source-name">MPHP sieć</span>
+              <span class="source-meta">Online · v2024.1</span>
+            </div>
+            <div class="source-item">
+              <span class="source-dot online"></span>
+              <span class="source-name">Model LSTM</span>
+              <span class="source-meta">Online · Trening 2026-03-28</span>
+            </div>
+          </div>
+        </div>
+        </div><!-- /#sidebar-monitor-content -->
+
+        <div id="sidebar-gis-content" style="display:none">
+          <!-- GIS Objects panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Obiekty GIS</span>
+              <span class="panel-count" id="gis-obj-panel-count">0</span>
+            </div>
+            <div id="gis-objects-list">
+              <div class="gis-empty-state">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="1.5"><polygon points="12,2 22,20 2,20"/></svg>
+                <p>Brak narysowanych obiektów</p>
+                <p class="gis-empty-hint">Użyj narzędzi po lewej aby rysować</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- What-If Analysis panel -->
+          <div class="panel sidebar-panel" id="panel-whatif">
+            <div class="panel-header">
+              <span class="panel-title">Analiza what-if</span>
+              <span class="panel-count" id="whatif-status">niegotowa</span>
+            </div>
+            <div id="whatif-content">
+              <!-- rendered by renderWhatifPanel() -->
+            </div>
+          </div>
+
+          <!-- Map layers panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Warstwy mapy</span>
+            </div>
+            <div class="map-layers-list">
+              <label class="layer-toggle-item">
+                <input type="checkbox" class="layer-cb" data-layer="threats" checked>
+                <span class="layer-dot" style="background:var(--l3)"></span>
+                <span class="layer-label">Aktywne zagrożenia</span>
+              </label>
+              <label class="layer-toggle-item">
+                <input type="checkbox" class="layer-cb" data-layer="rivers" checked>
+                <span class="layer-dot" style="background:var(--teal)"></span>
+                <span class="layer-label">Sieć rzeczna</span>
+              </label>
+              <label class="layer-toggle-item">
+                <input type="checkbox" class="layer-cb" data-layer="admin">
+                <span class="layer-dot" style="background:var(--text-faint)"></span>
+                <span class="layer-label">Granice administracyjne</span>
+              </label>
+              <label class="layer-toggle-item">
+                <input type="checkbox" class="layer-cb" data-layer="ortho">
+                <span class="layer-dot" style="background:#8B7355"></span>
+                <span class="layer-label">Ortofotomapa</span>
+                <span class="layer-badge">niedostępna</span>
+              </label>
+            </div>
+          </div>
+        </div><!-- /#sidebar-gis-content -->
+
+      </div>
+    </div>
+    <!-- GIS STATUSBAR (hidden by default) -->
+    <div class="gis-statusbar" id="gis-statusbar" style="display:none">
+      <span class="gis-status-tool">Narzędzie: <strong id="status-tool-name">Zaznaczenie</strong></span>
+      <span class="gis-status-hint" id="status-hint">Kliknij obiekt na mapie, aby go zaznaczyć</span>
+      <span class="gis-status-objects">Obiekty: <strong id="status-obj-count">0</strong></span>
+      <span class="gis-status-measure" id="status-measure" style="display:none"></span>
+    </div>
+  </main>
+
+  <script src="monitor.js"></script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>
