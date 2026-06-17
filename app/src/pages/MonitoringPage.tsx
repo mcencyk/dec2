@@ -11,6 +11,8 @@ export function MonitoringPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [selectedRiver, setSelectedRiver] = useState<River | null>(null)
   const [activeSection, setActiveSection] = useState<'monitoring' | 'analiza' | 'planowanie'>('monitoring')
+  // shared hover state — syncs heatbar segments ↔ map markers
+  const [hoveredStationId, setHoveredStationId] = useState<string | null>(null)
 
   return (
     <div ref={containerRef} className="relative w-full h-full overflow-hidden bg-background">
@@ -34,6 +36,8 @@ export function MonitoringPage() {
         <RightPanel
           selectedRiverId={selectedRiver?.id}
           onSelectRiver={setSelectedRiver}
+          hoveredStationId={hoveredStationId}
+          onStationHover={setHoveredStationId}
           mouseContainer={containerRef}
         />
       </div>
