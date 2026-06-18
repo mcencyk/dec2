@@ -4,27 +4,27 @@ import { severityColor } from '@/lib/severity'
 
 interface HeatbarProps {
   stations: Station[]
-  // bidirectional sync with map: parent controls which station is highlighted
+  isCardHovered?: boolean
   hoveredStationId?: string | null
   onStationHover?: (id: string | null) => void
 }
 
-export function Heatbar({ stations, hoveredStationId, onStationHover }: HeatbarProps) {
+export function Heatbar({ stations, isCardHovered, hoveredStationId, onStationHover }: HeatbarProps) {
   const [localHovered, setLocalHovered] = useState<string | null>(null)
 
   if (stations.length === 0) return null
 
-  // Margin segments represent "beyond the visible stretch" — grey, non-interactive
-  const segments = [
-    { id: 'left-margin',  severity: 'L0' as const, isMargin: true,  stationId: null },
-    ...stations.map(s => ({ id: s.id, severity: s.severity, isMargin: false, stationId: s.id })),
-    { id: 'right-margin', severity: 'L0' as const, isMargin: true,  stationId: null },
-  ]
+  const segments = stations.map(s => ({ id: s.id, severity: s.severity, stationId: s.id }))
 
-  // Active highlight: from parent (map hover) takes priority, else local hover
   const activeId = hoveredStationId ?? localHovered
 
-  function handleEnter(stationId: string | null) {
+  // Does the currently hovered station belong to THIS river's segments?
+  // If yes, react even when the card itself isn't mouse-hovered (e.g. map→panel sync).
+  // If no (station is on a different river/card), stay neutral — prevents bleeding.
+  const isInThisRiver = activeId !== null && segments.some(s => s.stationId === activeId)
+  const isAnySegmentHovered = (isCardHovered || isInThisRiver) && activeId !== null
+
+  function handleEnter(stationId: string) {
     setLocalHovered(stationId)
     onStationHover?.(stationId)
   }
@@ -34,24 +34,32 @@ export function Heatbar({ stations, hoveredStationId, onStationHover }: HeatbarP
   }
 
   return (
-    <div className="flex items-center w-full" style={{ gap: '2px', height: '4px' }}>
+    <div className="flex items-center w-full" style={{ gap: '2px', height: '12px' }}>
       {segments.map(seg => {
-        const isActive = !seg.isMargin && seg.stationId === activeId
+        const isActive = seg.stationId === activeId && isAnySegmentHovered
+
+        // Active: 5px | Card hovered: all at 4px | Default: 2px
+        const visualHeight = isActive ? '5px' : isCardHovered ? '4px' : '2px'
+        const opacity = (isAnySegmentHovered && !isActive) ? 0.45 : 1
+
         return (
           <div
             key={seg.id}
-            className="flex-1"
-            onMouseEnter={seg.isMargin ? undefined : () => handleEnter(seg.stationId)}
-            onMouseLeave={seg.isMargin ? undefined : handleLeave}
-            style={{
-              height: isActive ? '4px' : '2px',
-              borderRadius: '100px',
-              backgroundColor: seg.isMargin ? '#b8b8b8' : severityColor(seg.severity),
-              opacity: seg.isMargin ? 0.5 : 1,
-              transition: 'height 120ms ease',
-              cursor: seg.isMargin ? undefined : 'pointer',
-            }}
-          />
+            className="flex-1 h-full flex items-center cursor-pointer"
+            onMouseEnter={() => handleEnter(seg.stationId)}
+            onMouseLeave={handleLeave}
+          >
+            <div
+              style={{
+                width: '100%',
+                height: visualHeight,
+                borderRadius: '100px',
+                backgroundColor: severityColor(seg.severity),
+                opacity,
+                transition: 'height 150ms ease, opacity 250ms ease',
+              }}
+            />
+          </div>
         )
       })}
     </div>

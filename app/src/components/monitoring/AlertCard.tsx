@@ -8,12 +8,10 @@ interface AlertCardProps {
   river: River
   onClick?: () => void
   selected?: boolean
-  // bidirectional map ↔ heatbar segment sync
   hoveredStationId?: string | null
   onStationHover?: (id: string | null) => void
 }
 
-// Shadows from Figma spec
 const SHADOW_XS = '0px 1px 2px 0px rgba(0,0,0,0.05)'
 const SHADOW_MD = '0px 4px 6px -1px rgba(0,0,0,0.1), 0px 2px 4px -2px rgba(0,0,0,0.1)'
 
@@ -39,28 +37,30 @@ export function AlertCard({ river, onClick, selected, hoveredStationId, onStatio
         transition: 'background 150ms ease, box-shadow 150ms ease',
       }}
     >
-      {/* Line 1: river name + badge + time */}
+      {/* Top row: [left col: river name + station] [right: badge + time] */}
+      {/* River name and station have NO gap between them — same flex-col per Figma */}
       <div className="flex items-start justify-between w-full gap-2">
-        <span className="font-semibold text-[14px] leading-5 text-[#0a0a0a] truncate">
-          {river.displayName}
-        </span>
+        <div className="flex flex-col min-w-0">
+          <span className="font-semibold text-[14px] leading-5 text-[#0a0a0a] truncate">
+            {river.displayName}
+          </span>
+          <span
+            className="text-[12px] leading-4 whitespace-nowrap"
+            style={{
+              color: showHoverStyle ? '#0a0a0a' : '#737373',
+              transition: 'color 150ms ease',
+            }}
+          >
+            {dominant.name} · {dominant.value} cm
+          </span>
+        </div>
         <SeverityBadge severity={severity} trend={dominant.trend} time={dominant.lastUpdate} />
       </div>
 
-      {/* Line 2: station · value — muted in default, dark on hover */}
-      <div
-        className="text-[10px] leading-4 whitespace-nowrap"
-        style={{
-          color: showHoverStyle ? '#0a0a0a' : '#737373',
-          transition: 'color 150ms ease',
-        }}
-      >
-        {dominant.name} · {dominant.value} cm
-      </div>
-
-      {/* Line 3: interactive heatbar */}
+      {/* Heatbar */}
       <Heatbar
         stations={river.stations}
+        isCardHovered={showHoverStyle}
         hoveredStationId={hoveredStationId}
         onStationHover={onStationHover}
       />

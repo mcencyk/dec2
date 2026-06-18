@@ -18,7 +18,10 @@ export function MonitoringPage() {
     <div ref={containerRef} className="relative w-full h-full overflow-hidden bg-background">
       {/* Map (full-screen background) */}
       <div className="absolute inset-0 z-0">
-        <MapView />
+        <MapView
+          hoveredStationId={hoveredStationId}
+          onStationHover={setHoveredStationId}
+        />
       </div>
 
       {/* Left panel — from top-6; bottom-22=88px = toolbar 40px + gap 24px + bottom 24px */}

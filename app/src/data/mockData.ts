@@ -4,10 +4,14 @@ import type { Basin, River, Station } from '@/types'
 // ── Stacje Odra — Wrocław ───────────────────────────────────────────────────
 const odraSt: Station[] = [
   { id: 'odra-olawa',       name: 'Oława-miasto',        river: 'Odra', km: 230, value: 245,  severity: 'L1', trend: 'up',     thresholds: { l1: 200, l2: 380, l3: 450 }, lastUpdate: '16:40', lat: 50.9488, lng: 17.2875 },
-  { id: 'odra-trestno',     name: 'Trestno',             river: 'Odra', km: 242, value: 523,  severity: 'L3', trend: 'up',     thresholds: { l1: 200, l2: 380, l3: 450 }, lastUpdate: '16:42', lat: 51.1030, lng: 17.0500 },
-  { id: 'odra-szczytniki',  name: 'Szczytniki',          river: 'Odra', km: 249, value: 498,  severity: 'L3', trend: 'up',     thresholds: { l1: 200, l2: 380, l3: 450 }, lastUpdate: '16:38', lat: 51.1157, lng: 17.0208 },
-  { id: 'odra-osobowice',   name: 'Osobowice',           river: 'Odra', km: 255, value: 472,  severity: 'L2', trend: 'up',     thresholds: { l1: 180, l2: 340, l3: 420 }, lastUpdate: '16:31', lat: 51.1420, lng: 16.9960 },
-  { id: 'odra-srodmiescie', name: 'Śródmieście',         river: 'Odra', km: 263, value: 445,  severity: 'L2', trend: 'up',     thresholds: { l1: 180, l2: 340, l3: 420 }, lastUpdate: '16:39', lat: 51.1100, lng: 17.0300 },
+  // Trestno — Odra km 242, kanał główny na wschód od centrum
+  { id: 'odra-trestno',     name: 'Trestno',             river: 'Odra', km: 242, value: 523,  severity: 'L3', trend: 'up',     thresholds: { l1: 200, l2: 380, l3: 450 }, lastUpdate: '16:42', lat: 51.0902, lng: 17.0524 },
+  // Szczytniki — Odra km 249, koryto rzeki przy Parku Szczytnickim
+  { id: 'odra-szczytniki',  name: 'Szczytniki',          river: 'Odra', km: 249, value: 498,  severity: 'L3', trend: 'up',     thresholds: { l1: 200, l2: 380, l3: 450 }, lastUpdate: '16:38', lat: 51.1055, lng: 17.0610 },
+  // Osobowice — Odra km 255, północna gałąź Odry
+  { id: 'odra-osobowice',   name: 'Osobowice',           river: 'Odra', km: 255, value: 472,  severity: 'L2', trend: 'up',     thresholds: { l1: 180, l2: 340, l3: 420 }, lastUpdate: '16:31', lat: 51.1500, lng: 16.9830 },
+  // Śródmieście — Odra km 263, Kanał Miejski przez centrum
+  { id: 'odra-srodmiescie', name: 'Śródmieście',         river: 'Odra', km: 263, value: 445,  severity: 'L2', trend: 'up',     thresholds: { l1: 180, l2: 340, l3: 420 }, lastUpdate: '16:39', lat: 51.1120, lng: 17.0195 },
   { id: 'odra-brzeg-dolny', name: 'Brzeg Dolny',         river: 'Odra', km: 270, value: 398,  severity: 'L2', trend: 'up',     thresholds: { l1: 180, l2: 340, l3: 420 }, lastUpdate: '16:28', lat: 51.2680, lng: 16.7110 },
 ]
 
@@ -30,9 +34,12 @@ const widawaSt: Station[] = [
 // ── Stacje Ślęza ─────────────────────────────────────────────────────────────
 const slezaSt: Station[] = [
   { id: 'sle-sleza',         name: 'Ślęza',                  river: 'Ślęza', km:  0, value: 112, severity: 'L0', trend: 'stable', thresholds: { l1: 130, l2: 270, l3: 300 }, lastUpdate: '16:15', lat: 50.8910, lng: 17.0880 },
-  { id: 'sle-bielany',       name: 'Bielany Wrocławskie',    river: 'Ślęza', km: 14, value: 156, severity: 'L1', trend: 'stable', thresholds: { l1: 130, l2: 270, l3: 300 }, lastUpdate: '16:05', lat: 51.0430, lng: 17.0040 },
-  { id: 'sle-wojszyce',      name: 'Wojszyce',               river: 'Ślęza', km: 22, value: 142, severity: 'L1', trend: 'down',   thresholds: { l1: 130, l2: 270, l3: 300 }, lastUpdate: '16:23', lat: 51.0680, lng: 17.0330 },
-  { id: 'sle-ujscie',        name: 'Ujście',                  river: 'Ślęza', km: 28, value:  98, severity: 'L0', trend: 'stable', thresholds: { l1: 130, l2: 270, l3: 300 }, lastUpdate: '15:58', lat: 51.0850, lng: 17.0210 },
+  // Bielany Wrocławskie — Ślęza w korycie rzeki
+  { id: 'sle-bielany',       name: 'Bielany Wrocławskie',    river: 'Ślęza', km: 14, value: 156, severity: 'L1', trend: 'stable', thresholds: { l1: 130, l2: 270, l3: 300 }, lastUpdate: '16:05', lat: 51.0428, lng: 17.0065 },
+  // Wojszyce — Ślęza koryto
+  { id: 'sle-wojszyce',      name: 'Wojszyce',               river: 'Ślęza', km: 22, value: 142, severity: 'L1', trend: 'down',   thresholds: { l1: 130, l2: 270, l3: 300 }, lastUpdate: '16:23', lat: 51.0698, lng: 17.0270 },
+  // Ujście — Ślęza przed ujściem do Odry
+  { id: 'sle-ujscie',        name: 'Ujście',                  river: 'Ślęza', km: 28, value:  98, severity: 'L0', trend: 'stable', thresholds: { l1: 130, l2: 270, l3: 300 }, lastUpdate: '15:58', lat: 51.0930, lng: 17.0215 },
 ]
 
 // ── Stacje Oława ─────────────────────────────────────────────────────────────
@@ -41,7 +48,8 @@ const olawaSt: Station[] = [
   { id: 'ola-domaniow',     name: 'Domaniów',    river: 'Oława', km: 12, value: 142, severity: 'L0', trend: 'down',   thresholds: { l1: 100, l2: 200, l3: 250 }, lastUpdate: '16:00', lat: 50.8760, lng: 17.1910 },
   { id: 'ola-olawa-miasto', name: 'Oława-miasto',river: 'Oława', km: 22, value: 185, severity: 'L1', trend: 'down',   thresholds: { l1: 100, l2: 200, l3: 250 }, lastUpdate: '15:56', lat: 50.9480, lng: 17.2740 },
   { id: 'ola-opatowice',    name: 'Opatowice',   river: 'Oława', km: 30, value: 162, severity: 'L1', trend: 'down',   thresholds: { l1: 100, l2: 200, l3: 250 }, lastUpdate: '15:50', lat: 51.0200, lng: 17.1250 },
-  { id: 'ola-ujscie',       name: 'Ujście',       river: 'Oława', km: 36, value: 124, severity: 'L0', trend: 'stable', thresholds: { l1: 100, l2: 200, l3: 250 }, lastUpdate: '15:40', lat: 51.0850, lng: 17.0780 },
+  // Ujście Oławy — ujście do Odry, na korycie Oławy
+  { id: 'ola-ujscie',       name: 'Ujście',       river: 'Oława', km: 36, value: 124, severity: 'L0', trend: 'stable', thresholds: { l1: 100, l2: 200, l3: 250 }, lastUpdate: '15:40', lat: 51.0870, lng: 17.0768 },
 ]
 
 // ── Stacje Dorzecze Wisły ───────────────────────────────────────────────────

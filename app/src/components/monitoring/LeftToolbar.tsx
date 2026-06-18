@@ -14,21 +14,20 @@ const PILL: React.CSSProperties = {
   gap: '8px',
 }
 
-// Inner tabs group: bg-[#f5f5f5] + drop-shadow (half of lg)
 const INNER_GROUP: React.CSSProperties = {
   background: '#f5f5f5',
   borderRadius: '12px',
   padding: '4px',
   display: 'flex',
   alignItems: 'center',
-  filter: 'drop-shadow(0px 5px 7.5px rgba(0,0,0,0.1)) drop-shadow(0px 2px 3px rgba(0,0,0,0.1))',
+  gap: '2px',
+  boxShadow: '0px 5px 7px rgba(0,0,0,0.08), 0px 2px 3px rgba(0,0,0,0.06)',
   flexShrink: 0,
 }
 
-// Active tab: white bg + drop-shadow-sm
 const ACTIVE_TAB: React.CSSProperties = {
   background: '#ffffff',
-  filter: 'drop-shadow(0px 1px 1.5px rgba(0,0,0,0.1)) drop-shadow(0px 0.5px 1px rgba(0,0,0,0.1))',
+  boxShadow: '0px 1px 2px rgba(0,0,0,0.1), 0px 1px 1px rgba(0,0,0,0.08)',
 }
 
 // Standard tab dimensions from Figma

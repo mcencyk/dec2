@@ -82,7 +82,7 @@ export function RightPanel({ selectedRiverId, onSelectRiver, hoveredStationId, o
                 className="font-semibold text-white flex items-center justify-center"
                 style={{
                   fontSize: '10px',
-                  background: severityColor(basin.maxSeverity),
+                  background: 'var(--l3)',
                   borderRadius: '10px',
                   height: '16px',
                   minWidth: '16px',

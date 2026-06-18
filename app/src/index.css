@@ -193,6 +193,17 @@
 .badge-l3 { background: var(--l3-bg); color: var(--l3); border-color: transparent; }
 
 /* ─── Animations ────────────────────────────────────────────────────── */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.18; }
+  50%       { opacity: 0.35; }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 2.8s ease-in-out infinite;
+}
+.animate-glow-pulse-fast {
+  animation: glow-pulse 1.4s ease-in-out infinite;
+}
+
 @keyframes pulse-ring {
   0%   { transform: scale(1);   opacity: 0.8; }
   50%  { transform: scale(1.5); opacity: 0.3; }
