@@ -3,7 +3,6 @@ import { Search } from 'lucide-react'
 import { AlertCard } from './AlertCard'
 import { basins } from '@/data/mockData'
 import type { River } from '@/types'
-import { severityColor } from '@/lib/severity'
 
 interface RightPanelProps {
   selectedRiverId?: string
@@ -16,16 +15,8 @@ interface RightPanelProps {
 export function RightPanel({ selectedRiverId, onSelectRiver, hoveredStationId, onStationHover }: RightPanelProps) {
   return (
     <div
-      className="flex flex-col flex-1 min-h-0 w-70 shrink-0"
-      style={{
-        background: 'rgba(255,255,255,0.62)',
-        backdropFilter: 'blur(14px) saturate(1.5)',
-        WebkitBackdropFilter: 'blur(14px) saturate(1.5)',
-        borderRadius: '16px',
-        padding: '4px',
-        gap: '8px',
-        boxShadow: '0px 10px 15px 0px rgba(0,0,0,0.1), 0px 4px 6px 0px rgba(0,0,0,0.1)',
-      }}
+      className="lg-panel flex flex-col flex-1 min-h-0 w-70 shrink-0"
+      style={{ padding: '4px', gap: '8px' }}
     >
       {/* Search bar */}
       <div

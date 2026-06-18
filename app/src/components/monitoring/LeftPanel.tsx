@@ -23,14 +23,6 @@ const observed = [
   { name: 'San',       sub: 'Przemyśl · ',   value: 285, severity: 'L2' as const, trend: 'up' as const },
 ]
 
-const GLASS_PANEL: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.62)',
-  backdropFilter: 'blur(14px) saturate(1.5)',
-  WebkitBackdropFilter: 'blur(14px) saturate(1.5)',
-  borderRadius: '16px',
-  boxShadow: '0px 10px 15px 0px rgba(0,0,0,0.1), 0px 4px 6px 0px rgba(0,0,0,0.1)',
-}
-
 const SECTION: React.CSSProperties = {
   background: '#f0f0f0',
   borderRadius: '12px',
@@ -71,7 +63,7 @@ interface LeftPanelProps {
 
 export function LeftPanel(_props: LeftPanelProps) {
   return (
-    <div className="flex flex-col flex-1 min-h-0 w-68 shrink-0" style={GLASS_PANEL}>
+    <div className="lg-panel flex flex-col flex-1 min-h-0 w-68 shrink-0">
 
       {/* ── Scrollable content ── */}
       <div className="flex-1 overflow-y-auto px-2 pt-2 space-y-1.5 scrollbar-none min-h-0">

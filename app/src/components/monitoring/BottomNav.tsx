@@ -22,11 +22,6 @@ const TOOLS = [
 ]
 
 const PILL_OUTER: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.62)',
-  backdropFilter: 'blur(20px) saturate(1.6)',
-  WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
-  borderRadius: '16px',
-  boxShadow: '0px 10px 15px 0px rgba(0,0,0,0.1), 0px 4px 6px 0px rgba(0,0,0,0.1)',
   padding: '4px',
   display: 'flex',
   alignItems: 'center',
@@ -80,7 +75,7 @@ export function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
 
   return (
     <div className="absolute bottom-6 left-0 right-0 flex justify-center z-10 pointer-events-none">
-      <div className="pointer-events-auto shrink-0" style={PILL_OUTER}>
+      <div className="pointer-events-auto shrink-0 lg-pill" style={PILL_OUTER}>
 
         {/* ── LOGO ── */}
         <div className="flex items-center shrink-0">
@@ -164,7 +159,7 @@ export function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
                 )}
                 style={active ? ACTIVE_TOOL : {}}
               >
-                <Icon className={cn('size-4.5', active ? 'text-[#0a0a0a]' : '')} />
+                <Icon strokeWidth={1.5} className={cn('size-4.5', active ? 'text-[#0a0a0a]' : '')} />
               </button>
             ))}
           </div>

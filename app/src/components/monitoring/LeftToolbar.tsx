@@ -1,10 +1,4 @@
-// Outer pill: transparent bg + shadow-lg per Figma node 263:38309 (Side/Left)
 const PILL: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.62)',
-  backdropFilter: 'blur(20px) saturate(1.6)',
-  WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
-  borderRadius: '16px',
-  boxShadow: '0px 10px 15px 0px rgba(0,0,0,0.1), 0px 4px 6px 0px rgba(0,0,0,0.1)',
   paddingTop: '4px',
   paddingBottom: '4px',
   paddingLeft: '4px',
@@ -35,7 +29,7 @@ const TAB_BASE = 'flex items-center justify-center min-h-8 min-w-8 px-2.5 py-[5.
 
 export function LeftToolbar() {
   return (
-    <div style={PILL}>
+    <div className="lg-pill" style={PILL}>
 
       {/* Inner tabs group: Grid (active) · Layers · History */}
       <div style={INNER_GROUP}>
