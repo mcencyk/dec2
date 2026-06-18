@@ -22,7 +22,7 @@ const TOOLS = [
 ]
 
 const PILL_OUTER: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.72)',
+  background: 'rgba(255,255,255,0.62)',
   backdropFilter: 'blur(20px) saturate(1.6)',
   WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
   borderRadius: '16px',
@@ -51,7 +51,7 @@ const TOOLS_GROUP: React.CSSProperties = {
   padding: '4px',
   display: 'flex',
   alignItems: 'center',
-  gap: '2px',
+  gap: '4px',
   boxShadow: '0px 5px 7px rgba(0,0,0,0.08), 0px 2px 3px rgba(0,0,0,0.06)',
 }
 
@@ -106,7 +106,7 @@ export function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
         <div className="flex items-center shrink-0" style={{ gap: '16px' }}>
 
           {/* Nav tabs with sliding active pill */}
-          <div ref={navContainerRef} className="relative flex items-center">
+          <div ref={navContainerRef} className="relative flex items-center gap-1">
             {/* Sliding background pill — animates between active positions */}
             {pillPos && (
               <div
@@ -137,13 +137,13 @@ export function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
                   data-nav={id}
                   onClick={() => onSectionChange(id)}
                   className={cn(
-                    'relative z-10 flex items-center justify-center min-h-8 min-w-8 px-2.5 py-[5.5px] rounded-lg cursor-pointer whitespace-nowrap',
+                    'relative z-10 flex items-center justify-center min-h-8 min-w-8 px-3 py-[5.5px] rounded-lg cursor-pointer whitespace-nowrap',
                     !isActive && 'hover:bg-black/5 transition-colors duration-150'
                   )}
                 >
                   <span className={cn(
-                    'text-sm leading-5 transition-all duration-200',
-                    isActive ? 'font-semibold text-[#0a0a0a]' : 'font-medium text-[#525252] hover:text-[#0a0a0a]'
+                    'text-sm leading-5',
+                    isActive ? 'font-semibold text-[#0a0a0a]' : 'font-medium text-[#525252]'
                   )}>
                     {label}
                   </span>
@@ -160,7 +160,7 @@ export function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
                 title={label}
                 className={cn(
                   'flex items-center justify-center size-8 rounded-lg cursor-pointer transition-colors duration-150',
-                  !active && 'text-muted-foreground hover:text-foreground hover:bg-white/60'
+                  !active && 'text-muted-foreground hover:bg-black/5'
                 )}
                 style={active ? ACTIVE_TOOL : {}}
               >

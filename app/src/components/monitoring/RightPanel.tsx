@@ -18,7 +18,7 @@ export function RightPanel({ selectedRiverId, onSelectRiver, hoveredStationId, o
     <div
       className="flex flex-col flex-1 min-h-0 w-70 shrink-0"
       style={{
-        background: 'rgba(255,255,255,0.78)',
+        background: 'rgba(255,255,255,0.62)',
         backdropFilter: 'blur(14px) saturate(1.5)',
         WebkitBackdropFilter: 'blur(14px) saturate(1.5)',
         borderRadius: '16px',

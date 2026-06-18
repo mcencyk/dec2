@@ -24,7 +24,7 @@ const observed = [
 ]
 
 const GLASS_PANEL: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.78)',
+  background: 'rgba(255,255,255,0.62)',
   backdropFilter: 'blur(14px) saturate(1.5)',
   WebkitBackdropFilter: 'blur(14px) saturate(1.5)',
   borderRadius: '16px',
@@ -86,7 +86,7 @@ export function LeftPanel(_props: LeftPanelProps) {
           </div>
 
           {/* Multi-line trend chart */}
-          <div className="rounded-lg overflow-hidden mb-2" style={{ background: 'rgba(255,255,255,0.72)' }}>
+          <div className="rounded-lg overflow-hidden mb-2" style={{ background: 'rgba(255,255,255,1.00)' }}>
             <svg width="100%" height="62" viewBox="0 0 240 62" fill="none" preserveAspectRatio="none" className="block">
               <path d="M0,56 C40,50 80,42 120,32 S180,18 240,6"  stroke="var(--l3)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
               <path d="M0,56 C40,52 80,46 120,38 S180,26 240,14" stroke="var(--l2)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
@@ -107,7 +107,7 @@ export function LeftPanel(_props: LeftPanelProps) {
               { sev: 'L1', val: statsL1 },
               { sev: null, label: 'Anomalie', val: anomalies.length },
             ] as const).map((item, i) => (
-              <div key={i} className="rounded-lg px-2.5 py-2 flex items-center justify-between" style={{ background: 'rgba(255,255,255,0.72)' }}>
+              <div key={i} className="rounded-lg px-2.5 py-2 flex items-center justify-between" style={{ background: 'rgba(255,255,255,1.00)' }}>
                 {item.sev
                   ? <SevChip s={item.sev} />
                   : <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">{item.label}</span>
@@ -130,7 +130,7 @@ export function LeftPanel(_props: LeftPanelProps) {
             {forecasts.map(f => {
               const targetColor = severityColor(f.to as 'L0' | 'L1' | 'L2' | 'L3')
               return (
-                <div key={f.station} className="rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.72)' }}>
+                <div key={f.station} className="rounded-lg p-2" style={{ background: 'rgba(255,255,255,1.00)' }}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[13px] font-semibold text-foreground">{f.station}</span>
                     <span className="text-[10px] text-muted-foreground tabular-nums">{f.eta.replace('~ ', '').replace('h', 'h').trim()}</span>
@@ -166,7 +166,7 @@ export function LeftPanel(_props: LeftPanelProps) {
           </div>
           <div className="space-y-2">
             {anomalies.map(a => (
-              <div key={a.station} className="rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.72)' }}>
+              <div key={a.station} className="rounded-lg p-2" style={{ background: 'rgba(255,255,255,1.00)' }}>
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="text-[13px] font-semibold text-foreground">{a.station}</span>
                   <span className="text-[10px] text-muted-foreground tabular-nums">{a.time}</span>
@@ -196,7 +196,7 @@ export function LeftPanel(_props: LeftPanelProps) {
               const bg    = severityBgColor(o.severity)
               const trend = o.trend === 'up' ? '↑' : o.trend === 'down' ? '↓' : '—'
               return (
-                <div key={o.name} className="rounded-lg p-2 space-y-1.5" style={{ background: 'rgba(255,255,255,0.72)' }}>
+                <div key={o.name} className="rounded-lg p-2 space-y-1.5" style={{ background: 'rgba(255,255,255,1.00)' }}>
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-semibold text-foreground">{o.name}</span>
                     <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-md" style={{ color, background: bg }}>

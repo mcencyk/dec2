@@ -1,6 +1,6 @@
 // Outer pill: transparent bg + shadow-lg per Figma node 263:38309 (Side/Right)
 const PILL: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.72)',
+  background: 'rgba(255,255,255,0.62)',
   backdropFilter: 'blur(20px) saturate(1.6)',
   WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
   borderRadius: '16px',
@@ -20,7 +20,7 @@ const INNER_GROUP: React.CSSProperties = {
   padding: '4px',
   display: 'flex',
   alignItems: 'center',
-  gap: '2px',
+  gap: '4px',
   boxShadow: '0px 5px 7px rgba(0,0,0,0.08), 0px 2px 3px rgba(0,0,0,0.06)',
   flexShrink: 0,
 }
@@ -37,7 +37,7 @@ export function RightToolbar() {
     <div style={PILL}>
 
       {/* Standalone tab — Live dot (stacked layers per Figma) */}
-      <div className={`${TAB_BASE} hover:bg-white/60`} title="Status danych">
+      <div className={`${TAB_BASE} hover:bg-black/5`} title="Status danych">
         {/* Stacked grid: blurred bg layer + sharp fg layer */}
         <div className="inline-grid place-items-start relative shrink-0 size-2">
           <div className="blur-[2px] col-start-1 row-start-1 opacity-65 relative size-2">
@@ -53,7 +53,7 @@ export function RightToolbar() {
       </div>
 
       {/* Standalone tab — Refresh */}
-      <div className={`${TAB_BASE} hover:bg-white/60`} title="Odśwież">
+      <div className={`${TAB_BASE} hover:bg-black/5`} title="Odśwież">
         <div className="overflow-clip relative shrink-0 size-5">
           <div className="absolute inset-[9.38%]">
             <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-refresh.svg" draggable={false} />
