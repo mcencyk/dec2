@@ -15,7 +15,7 @@ interface RightPanelProps {
 export function RightPanel({ selectedRiverId, onSelectRiver, hoveredStationId, onStationHover }: RightPanelProps) {
   return (
     <div
-      className="lg-panel flex flex-col flex-1 min-h-0 w-70 shrink-0"
+      className="lg-panel flex flex-col max-h-full min-h-0 w-70 shrink-0"
       style={{ padding: '4px', gap: '8px' }}
     >
       {/* Search bar */}
@@ -39,7 +39,7 @@ export function RightPanel({ selectedRiverId, onSelectRiver, hoveredStationId, o
       </div>
 
       {/* Alert list */}
-      <div className="flex-1 overflow-y-auto scrollbar-none min-h-0" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div className="flex-1 panel-scroll min-h-0" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {basins.map(basin => (
           <div
             key={basin.id}

@@ -255,6 +255,30 @@
 .badge-l2 { background: var(--l2-bg); color: var(--l2); border-color: transparent; }
 .badge-l3 { background: var(--l3-bg); color: var(--l3); border-color: transparent; }
 
+/* ─── Panel scroll — hidden by default, visible on hover ───────────── */
+.panel-scroll {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.panel-scroll:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+.panel-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+.panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+  transition: background 200ms;
+}
+.panel-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
+}
+
 /* ─── Animations ────────────────────────────────────────────────────── */
 @keyframes glow-pulse {
   0%, 100% { opacity: 0.18; }
