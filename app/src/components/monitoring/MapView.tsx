@@ -289,7 +289,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
     features.forEach(f => {
       const [lng, lat] = f.geometry.coordinates as [number, number]
 
-      if (f.properties?.cluster) {
+      if ((f.properties as Record<string, unknown>)?.cluster) {
         // ── Cluster badge ───────────────────────────────────────────────
         const props     = f.properties as { cluster_id: number; point_count: number }
         const clusterId = props.cluster_id
