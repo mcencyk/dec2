@@ -19,6 +19,7 @@ export function MonitoringPage() {
       {/* Map (full-screen background) */}
       <div className="absolute inset-0 z-0">
         <MapView
+          activeSection={activeSection}
           hoveredStationId={hoveredStationId}
           onStationHover={setHoveredStationId}
         />

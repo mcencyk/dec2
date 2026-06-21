@@ -1,21 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
+import { createPortal } from 'react-dom'
+import maplibregl from 'maplibre-gl'
 import { basins } from '@/data/mockData'
+import { BUILDINGS_GEOJSON, WATER_GEOJSON, CANAL_GEOJSON } from '@/data/analysisLayers'
 import { severityColor } from '@/lib/severity'
 import type { Station } from '@/types'
 
-const BOUNDS = { west: 16.949, east: 17.177, south: 51.032, north: 51.157 }
+// ── Style URLs ────────────────────────────────────────────────────────────────
+const STYLE_MONITORING = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json'
+const STYLE_ANALIZA    = 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json'
 
-function project(lng: number, lat: number) {
-  const x = ((lng - BOUNDS.west) / (BOUNDS.east - BOUNDS.west)) * 100
-  const y = ((BOUNDS.north - lat) / (BOUNDS.north - BOUNDS.south)) * 100
-  return { x, y }
-}
+// Wrocław — Odra, Śródmieście
+const CENTER: [number, number] = [17.02, 51.11]
+const ZOOM = 12.8
+const BASE = 22  // marker icon bounding box size (px)
 
-function isInBounds(lng: number, lat: number) {
-  return lng >= BOUNDS.west && lng <= BOUNDS.east && lat >= BOUNDS.south && lat <= BOUNDS.north
-}
-
-// ── Marker shapes ────────────────────────────────────────────────────────────
+// ── Marker shapes ─────────────────────────────────────────────────────────────
 function MarkerIcon({ station, size }: { station: Station; size: number }) {
   const color = severityColor(station.severity)
 
@@ -30,7 +30,6 @@ function MarkerIcon({ station, size }: { station: Station; size: number }) {
   }
 
   if (station.trend === 'down') {
-    // viewBox cropped to the actual triangle content area (original 25×23 had ~28% wasted space)
     const h = Math.round(size * 16 / 19)
     return (
       <svg width={size} height={h} viewBox="3 3.5 19 16" fill="none">
@@ -49,14 +48,14 @@ function MarkerIcon({ station, size }: { station: Station; size: number }) {
   )
 }
 
-// ── Individual marker ────────────────────────────────────────────────────────
-function StationMarker({
+// ── Marker content (renders into a MapLibre DOM marker via portal) ─────────────
+function StationMarkerContent({
   station, isActive, isLocalHover, isPanelHover, onMouseEnter, onMouseLeave, onClick,
 }: {
   station: Station
   isActive: boolean
-  isLocalHover: boolean   // mouse is directly over this marker on the map
-  isPanelHover: boolean   // this station is hovered in the right panel
+  isLocalHover: boolean
+  isPanelHover: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void
   onClick: () => void
@@ -64,97 +63,236 @@ function StationMarker({
   const color = severityColor(station.severity)
   const isAlert = station.severity !== 'L0'
   const isHighlighted = isActive || isLocalHover || isPanelHover
-  const iconSize = isActive ? 26 : 22
 
-  // Glow intensity level
   const glowOpacityClass = isHighlighted
-    ? 'animate-glow-pulse-fast'  // faster + brighter on any hover/active
+    ? 'animate-glow-pulse-fast'
     : isAlert
-    ? 'animate-glow-pulse'       // slow subtle pulse always-on for alerts
+    ? 'animate-glow-pulse'
     : undefined
 
+  // The portal target el is BASE×BASE px, centered on lat/lng by MapLibre (anchor: center).
+  // Tooltip overflows to the right via overflow:visible on the portal target.
   return (
     <div
-      className="absolute cursor-pointer"
-      style={{ left: '0%', top: '0%' }}
+      style={{
+        width: BASE, height: BASE,
+        position: 'relative',
+        cursor: 'pointer',
+        pointerEvents: 'auto',
+      }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
+      {/* Icon + radial glow — centered in the BASE×BASE box */}
       <div
-        className="flex items-center"
+        className="absolute inset-0 flex items-center justify-center"
         style={{
-          gap: isActive ? 4 : 8,
-          transform: `translate(-${iconSize / 2}px, -50%)`,
+          transform: isActive ? 'scale(1.18)' : 'scale(1)',
+          filter: isHighlighted
+            ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.22)) drop-shadow(0 1px 3px rgba(0,0,0,0.14))'
+            : 'none',
+          transition: 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1), filter 140ms cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
-        {/* Icon + radial glow */}
-        <div className="relative shrink-0 flex items-center justify-center" style={{ width: iconSize, height: iconSize }}>
-          {isAlert && (
-            <div
-              className={`absolute pointer-events-none ${glowOpacityClass ?? ''}`}
-              style={{
-                width:  iconSize * 2.4,
-                height: iconSize * 2.4,
-                left: '50%',
-                top:  '50%',
-                transform: 'translate(-50%, -50%)',
-                background: `radial-gradient(ellipse at 50% 50%, ${color} 0%, transparent 60%)`,
-                filter: 'blur(2px)',
-              }}
-            />
-          )}
-          <MarkerIcon station={station} size={iconSize} />
-        </div>
-
-        {/* Tooltip — only on direct map hover (not panel hover, not active which has its own) */}
-        {isLocalHover && !isActive && (
+        {isAlert && (
           <div
-            className="whitespace-nowrap rounded-lg"
+            className={`absolute pointer-events-none ${glowOpacityClass ?? ''}`}
             style={{
-              background: 'rgba(255,255,255,0.94)',
-              boxShadow: '0px 4px 12px rgba(0,0,0,0.12), 0px 1px 3px rgba(0,0,0,0.08)',
-              padding: '6px 10px',
+              width:  BASE * 1.8,
+              height: BASE * 1.8,
+              left: '50%', top: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: `radial-gradient(ellipse at 50% 50%, ${color} 0%, transparent 55%)`,
+              filter: 'blur(1px)',
             }}
-          >
-            <div className="text-[12px] font-semibold leading-4 text-[#27272a]">{station.name}</div>
-            <div className="text-[11px] leading-4 text-[#71717a]">{station.value} cm</div>
-          </div>
+          />
         )}
-
-        {/* Active tooltip */}
-        {isActive && (
-          <div
-            className="whitespace-nowrap rounded-lg"
-            style={{
-              background: '#18181b',
-              boxShadow: '0px 4px 12px rgba(0,0,0,0.2), 0px 2px 4px rgba(0,0,0,0.12)',
-              padding: '6px 10px',
-            }}
-          >
-            <div className="text-[12px] font-semibold leading-4 text-white">{station.name}</div>
-            <div className="text-[11px] leading-4 text-[#a1a1aa]">{station.value} cm</div>
-          </div>
-        )}
+        <MarkerIcon station={station} size={BASE} />
       </div>
+
+      {/* Hover tooltip — white card, shown on map hover only (not when active) */}
+      {!isActive && (
+        <div
+          className="whitespace-nowrap rounded-lg pointer-events-none"
+          style={{
+            position: 'absolute',
+            left: BASE + 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'rgba(255,255,255,0.94)',
+            boxShadow: '0px 4px 12px rgba(0,0,0,0.12), 0px 1px 3px rgba(0,0,0,0.08)',
+            padding: '6px 10px',
+            opacity: isLocalHover ? 1 : 0,
+            transition: 'opacity 140ms cubic-bezier(0.16, 1, 0.3, 1), transform 140ms cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
+          <div className="text-[12px] font-semibold leading-4 text-[#27272a]">{station.name}</div>
+          <div className="text-[11px] leading-4 text-[#71717a]">{station.value} cm</div>
+        </div>
+      )}
+
+      {/* Active tooltip — dark card, always visible when active */}
+      {isActive && (
+        <div
+          className="whitespace-nowrap rounded-lg pointer-events-none"
+          style={{
+            position: 'absolute',
+            left: BASE + 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: '#18181b',
+            boxShadow: '0px 4px 12px rgba(0,0,0,0.2), 0px 2px 4px rgba(0,0,0,0.12)',
+            padding: '6px 10px',
+          }}
+        >
+          <div className="text-[12px] font-semibold leading-4 text-white">{station.name}</div>
+          <div className="text-[11px] leading-4 text-[#a1a1aa]">{station.value} cm</div>
+        </div>
+      )}
     </div>
   )
 }
 
-// ── Map view ─────────────────────────────────────────────────────────────────
+// ── Analysis data layers ──────────────────────────────────────────────────────
+function addAnalysisLayers(map: maplibregl.Map) {
+  // Guard: skip if sources already exist (e.g. double style.load fire)
+  if (map.getSource('dec-buildings')) return
+
+  map.addSource('dec-buildings', { type: 'geojson', data: BUILDINGS_GEOJSON })
+  map.addLayer({
+    id: 'dec-buildings-fill',
+    type: 'fill',
+    source: 'dec-buildings',
+    paint: { 'fill-color': '#7C3AED', 'fill-opacity': 0.75 },
+  })
+  map.addLayer({
+    id: 'dec-buildings-stroke',
+    type: 'line',
+    source: 'dec-buildings',
+    paint: { 'line-color': '#5B21B6', 'line-width': 0.8 },
+  })
+
+  map.addSource('dec-water', { type: 'geojson', data: WATER_GEOJSON })
+  map.addLayer({
+    id: 'dec-water-fill',
+    type: 'fill',
+    source: 'dec-water',
+    paint: { 'fill-color': '#3B82F6', 'fill-opacity': 0.65 },
+  })
+  map.addLayer({
+    id: 'dec-water-stroke',
+    type: 'line',
+    source: 'dec-water',
+    paint: { 'line-color': '#1D4ED8', 'line-width': 1 },
+  })
+
+  map.addSource('dec-canal', { type: 'geojson', data: CANAL_GEOJSON })
+  map.addLayer({
+    id: 'dec-canal-line',
+    type: 'line',
+    source: 'dec-canal',
+    paint: { 'line-color': '#0f0f10', 'line-width': 2.5, 'line-opacity': 0.85 },
+  })
+}
+
+// ── MapView ───────────────────────────────────────────────────────────────────
 interface MapViewProps {
-  // Shared with RightPanel for bidirectional map ↔ heatbar sync
+  activeSection: 'monitoring' | 'analiza' | 'planowanie'
   hoveredStationId?: string | null
   onStationHover?: (id: string | null) => void
 }
 
-export function MapView({ hoveredStationId, onStationHover }: MapViewProps) {
+export function MapView({ activeSection, hoveredStationId, onStationHover }: MapViewProps) {
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const mapRef          = useRef<maplibregl.Map | null>(null)
+  // Refs for event callbacks — always see current values without re-creating map
+  const activeSectionRef  = useRef(activeSection)
+  const currentStyleRef   = useRef(STYLE_MONITORING)
+
+  // Map<stationId → DOM element> — portal targets created by MapLibre Marker
+  const [portalMap, setPortalMap] = useState<Map<string, HTMLElement>>(new Map())
+  // Keep Marker instances so we can call marker.remove() before map.remove()
+  const mapMarkersRef = useRef<maplibregl.Marker[]>([])
+
   const [activeId,     setActiveId]     = useState<string | null>(null)
   const [localHoverId, setLocalHoverId] = useState<string | null>(null)
 
-  const allStations     = basins.flatMap(b => b.rivers.flatMap(r => r.stations))
-  const visibleStations = allStations.filter(s => isInBounds(s.lng, s.lat))
+  const allStations = useMemo(
+    () => basins.flatMap(b => b.rivers.flatMap(r => r.stations)),
+    [],
+  )
+  const stationsById = useMemo(
+    () => new Map(allStations.map(s => [s.id, s])),
+    [allStations],
+  )
 
+  // ── Map initialization (once) ──────────────────────────────────────────────
+  useEffect(() => {
+    if (!mapContainerRef.current) return
+
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: STYLE_MONITORING,
+      center: CENTER,
+      zoom: ZOOM,
+      attributionControl: false,
+    })
+
+    mapRef.current = map
+
+    // Create a 0x0 overflow-visible DOM element for each station
+    // → MapLibre centers it at lat/lng; we portal React content into it
+    const portals = new Map<string, HTMLElement>()
+
+    allStations.forEach(station => {
+      const el = document.createElement('div')
+      // BASE×BASE so MapLibre's anchor:'center' centers the icon exactly at lat/lng
+      el.style.cssText = `position:absolute;width:${BASE}px;height:${BASE}px;overflow:visible;pointer-events:none;`
+
+      const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([station.lng, station.lat])
+        .addTo(map)
+
+      mapMarkersRef.current.push(marker)
+      portals.set(station.id, el)
+    })
+
+    setPortalMap(portals)
+
+    // Re-add data layers after every style change
+    map.on('style.load', () => {
+      if (activeSectionRef.current === 'analiza') {
+        addAnalysisLayers(map)
+      }
+    })
+
+    return () => {
+      // Detach markers from map BEFORE map.remove() so portal targets
+      // aren't torn out of the DOM while React portals still reference them.
+      mapMarkersRef.current.forEach(m => m.remove())
+      mapMarkersRef.current = []
+      setPortalMap(new Map())
+      map.remove()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ── Style switching ────────────────────────────────────────────────────────
+  useEffect(() => {
+    activeSectionRef.current = activeSection
+    const map = mapRef.current
+    if (!map) return
+
+    const style = activeSection === 'analiza' ? STYLE_ANALIZA : STYLE_MONITORING
+    if (currentStyleRef.current !== style) {
+      currentStyleRef.current = style
+      map.setStyle(style)
+      // 'style.load' handler (registered at init) re-adds data layers when needed
+    }
+  }, [activeSection])
+
+  // ── Hover handlers ─────────────────────────────────────────────────────────
   function handleEnter(id: string) {
     setLocalHoverId(id)
     onStationHover?.(id)
@@ -165,34 +303,28 @@ export function MapView({ hoveredStationId, onStationHover }: MapViewProps) {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      <img
-        src="/map.png"
-        alt=""
-        className="absolute inset-0 w-full h-full object-cover select-none"
-        draggable={false}
-      />
+    <>
+      {/* MapLibre canvas container */}
+      <div ref={mapContainerRef} className="absolute inset-0" />
 
-      {visibleStations.map(station => {
-        const { x, y } = project(station.lng, station.lat)
-        const isActive     = activeId      === station.id
-        const isLocalHover = localHoverId  === station.id
-        const isPanelHover = hoveredStationId === station.id && !isLocalHover
+      {/* Station markers — portaled into MapLibre DOM marker elements */}
+      {Array.from(portalMap.entries()).map(([stationId, el]) => {
+        const station = stationsById.get(stationId)
+        if (!station) return null
 
-        return (
-          <div key={station.id} className="absolute" style={{ left: `${x}%`, top: `${y}%` }}>
-            <StationMarker
-              station={station}
-              isActive={isActive}
-              isLocalHover={isLocalHover}
-              isPanelHover={isPanelHover}
-              onMouseEnter={() => handleEnter(station.id)}
-              onMouseLeave={handleLeave}
-              onClick={() => setActiveId(prev => prev === station.id ? null : station.id)}
-            />
-          </div>
+        return createPortal(
+          <StationMarkerContent
+            station={station}
+            isActive={activeId === stationId}
+            isLocalHover={localHoverId === stationId}
+            isPanelHover={(hoveredStationId === stationId) && (localHoverId !== stationId)}
+            onMouseEnter={() => handleEnter(stationId)}
+            onMouseLeave={handleLeave}
+            onClick={() => setActiveId(prev => prev === stationId ? null : stationId)}
+          />,
+          el,
         )
       })}
-    </div>
+    </>
   )
 }

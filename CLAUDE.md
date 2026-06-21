@@ -1,7 +1,7 @@
 # Deceris — CLAUDE.md
 **Projekt:** Deceris  
 **Ścieżka:** `/Users/mateuszcencyk/Projekty/Code/Deceris/`  
-**Data aktualizacji:** 2026-06-16 (v3)
+**Data aktualizacji:** 2026-06-19 (v4)
 
 ---
 
@@ -764,15 +764,58 @@ Lista przypiętych akwenów i stacji. Per pozycja: nazwa + aktualna wartość + 
 
 ---
 
-## Stack techniczny (bazowy)
+## Stack techniczny (aktualny)
 
-- **React + Vite** — framework frontendowy (czyste SPA, bez SSR)
-- **shadcn/ui** — biblioteka komponentów (baza, niezmodyfikowana do czasu decyzji o stylowaniu)
-- **shadcn/ui Charts (Recharts)** — wykresy i sparkline'y; wbudowany w ekosystem shadcn, spójny styl z resztą UI
-- **OpenLayers** — obsługa warstw wektorowych i rasterowych
-- **OpenStreetMap** — podkład mapowy
-- **MapLibre GL JS** — renderowanie WebGL, warstwy wektorowe
-- **Maputnik** — wizualny edytor stylów map MapLibre GL JS (open-source, browser-based)
+- **React 19 + Vite + TypeScript** — SPA, `app/` directory
+- **Tailwind CSS v4** — utility-first, tokeny w `@theme inline`, `app/src/index.css`
+- **shadcn/ui (Radix base)** — komponenty UI, inicjalizacja przez `npx shadcn@latest`
+- **shadcn/ui Charts (Recharts)** — wykresy; `<ResponsiveContainer>` dla dynamicznej szerokości
+- **Lucide React** — ikony (`lucide-react`) — domyślna biblioteka ikon
+- **MapLibre GL JS** — renderer mapy WebGL, warstwy wektorowe/rasterowe
+- **OpenStreetMap** — podkład mapowy (w prototypie: `map.png` static asset)
+- **Maputnik** — wizualny edytor stylów MapLibre GL JS
+
+### Liquid Glass — design system paneli
+
+Floating panele i pills nad mapą używają **Liquid Glass** — własnego systemu CSS klas w `app/src/index.css`.
+
+| Klasa | Zastosowanie | Blur | Background |
+|-------|-------------|------|-----------|
+| `.lg-panel` | LeftPanel, RightPanel | `blur(28px) saturate(2.2)` | `rgba(255,255,255,0.12)` |
+| `.lg-pill` | toolbary, BottomNav | `blur(24px) saturate(2.0)` | `rgba(255,255,255,0.16)` |
+
+**KRYTYCZNY wzorzec `zIndex: 21`:** każda klasa ma pseudo-element `::after` z białym gradientem na `z-index: 20` (efekt specular highlight). Elementy które muszą pokazywać swój kolor (badge, logo, ikony) wymagają `style={{ position: 'relative', zIndex: 21 }}`.
+
+Szczegółowa specyfikacja: `materials/FRONTEND_STYLES.md` sekcja 8.
+
+### Ikony
+
+Projekt używa **dwóch źródeł ikon:**
+
+1. **Lucide React** (`lucide-react`) — standardowe UI icons: `CircleAlert`, `RefreshCw`, `SlidersHorizontal`, `Bell`, `Settings`, etc.
+2. **SVG toolbar assets** (`app/public/toolbar-*.svg`) — ikony eksportowane z Figmy dla toolbarów (`toolbar-grid.svg`, `toolbar-layers.svg`, `toolbar-refresh.svg`, etc.) — renderowane przez `<img>` z precyzyjnymi wartościami `inset` z Figmy
+
+Zasada: Lucide dla wszystkich nowych ikon UI. SVG assets tylko gdy Figma eksportuje własne brandowe ikony toolbara.
+
+### Tooltip — custom portal-based
+
+**Nie używać natywnego `title=`** — wygląda jak przeglądarka.  
+Zamiast: `app/src/components/ui/Tooltip.tsx` — używa `React.cloneElement` + `createPortal` do `document.body`.
+
+```tsx
+import { Tooltip } from '@/components/ui/Tooltip'
+<Tooltip text="Odśwież"><button>...</button></Tooltip>
+<Tooltip text="Status danych" side="bottom"><div>...</div></Tooltip>
+```
+
+`createPortal` konieczny bo panele mają `overflow: hidden` (wymagane przez `backdrop-filter`).
+
+### Panel Scroll — hover-only scrollbar
+
+Klasa `.panel-scroll` w `index.css` — scrollbar 3px szeroki, widoczny tylko na hover.  
+Klasa `.panel-scroll-always` — scrollbar zawsze widoczny (nieużywana aktualnie).
+
+**Uwaga na szerokość:** pojawienie się scrollbara redukuje content width o 3px. Elementy z prawym krawędzią stałą używają układu `shrink-0 minWidth` + `flex-1` (patrz sparklines w LeftPanel).
 
 ### Maputnik — edytor stylów map
 
@@ -980,6 +1023,12 @@ Na mapie każda stacja pomiarowa (wodomierz IMGW) jest oznaczona markerem z dwom
 - **L3 Alarm** — czerwony (`--l3`), pulsujący intensywnie
 
 **Dominująca stacja akwenu** (najwyższy poziom wody) ma dodatkowy pulsujący ring zewnętrzny w kolorze severity.
+
+**Hover i klik na markerze:**
+- Hover: `drop-shadow(0 4px 8px rgba(0,0,0,0.22)) drop-shadow(0 1px 3px rgba(0,0,0,0.14))` — unoszenie
+- Klik (aktywny): scale `1.18` + ten sam drop-shadow
+- Animacja: `transform 200ms cubic-bezier(0.16, 1, 0.3, 1)` (scale) + `filter 140ms` (shadow)
+- `drop-shadow` (filter CSS) — śledzi kształt SVG, nie bounding box — konieczne dla trójkątów
 
 **Klaster stacji:**
 - Liczba stacji wewnątrz + kolor obramowania = severity najgorszej stacji w klastrze

@@ -1,3 +1,5 @@
+import { Tooltip } from '@/components/ui/Tooltip'
+
 const PILL: React.CSSProperties = {
   paddingTop: '4px',
   paddingBottom: '4px',
@@ -31,65 +33,80 @@ export function RightToolbar() {
     <div className="lg-pill" style={PILL}>
 
       {/* Standalone tab — Live dot (stacked layers per Figma) */}
-      <div className={`${TAB_BASE} hover:bg-black/5`} title="Status danych">
-        {/* Stacked grid: blurred bg layer + sharp fg layer */}
-        <div className="inline-grid place-items-start relative shrink-0 size-2">
-          <div className="blur-[2px] col-start-1 row-start-1 opacity-65 relative size-2">
-            <div className="absolute left-px top-px size-1.75 rounded-full" style={{ background: '#22c55e' }} />
-          </div>
-          <div className="col-start-1 row-start-1 relative size-2">
-            <div
-              className="absolute left-px top-px size-1.75 rounded-full"
-              style={{ background: '#22c55e', boxShadow: '0px 0.5px 1px 0px rgba(7,180,4,0.24)' }}
-            />
+      <Tooltip text="Status danych">
+        <div className={`${TAB_BASE} hover:bg-black/5`}>
+          {/* Stacked grid: blurred bg layer + sharp fg layer */}
+          <div className="inline-grid place-items-start relative shrink-0 size-2">
+            <div className="blur-[2px] col-start-1 row-start-1 opacity-65 relative size-2">
+              <div className="absolute left-px top-px size-1.75 rounded-full" style={{ background: '#22c55e' }} />
+            </div>
+            <div className="col-start-1 row-start-1 relative size-2">
+              <div
+                className="absolute left-px top-px size-1.75 rounded-full"
+                style={{ background: '#22c55e', boxShadow: '0px 0.5px 1px 0px rgba(7,180,4,0.24)' }}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </Tooltip>
 
       {/* Standalone tab — Refresh */}
-      <div className={`${TAB_BASE} hover:bg-black/5`} title="Odśwież">
-        <div className="overflow-clip relative shrink-0 size-5">
-          <div className="absolute inset-[9.38%]">
-            <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-refresh.svg" draggable={false} />
+      <Tooltip text="Odśwież">
+        <div className={`${TAB_BASE} hover:bg-black/5`}>
+          <div className="overflow-clip relative shrink-0 size-5">
+            <div className="absolute inset-[9.38%]">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-refresh.svg" draggable={false} />
+            </div>
           </div>
         </div>
-      </div>
+      </Tooltip>
 
       {/* Inner tabs group: Settings · Filter · Bell (active + badge) */}
       <div style={INNER_GROUP}>
         {/* Tab 1 — Settings */}
-        <div className={`${TAB_BASE} hover:bg-black/5`} title="Ustawienia">
-          <div className="overflow-clip relative shrink-0 size-5">
-            <div className="absolute inset-[13.54%]">
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-settings.svg" draggable={false} />
+        <Tooltip text="Ustawienia">
+          <div className={`${TAB_BASE} hover:bg-black/5`}>
+            <div className="overflow-clip relative shrink-0 size-5">
+              <div className="absolute inset-[13.54%]">
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-settings.svg" draggable={false} />
+              </div>
             </div>
           </div>
-        </div>
+        </Tooltip>
 
         {/* Tab 2 — Filter */}
-        <div className={`${TAB_BASE} hover:bg-black/5`} title="Filtry">
-          <div className="overflow-clip relative shrink-0 size-5">
-            <div className="absolute" style={{ inset: '21.88% 9.38%' }}>
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-filter.svg" draggable={false} />
+        <Tooltip text="Filtry">
+          <div className={`${TAB_BASE} hover:bg-black/5`}>
+            <div className="overflow-clip relative shrink-0 size-5">
+              <div className="absolute" style={{ inset: '21.88% 9.38%' }}>
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-filter.svg" draggable={false} />
+              </div>
             </div>
           </div>
-        </div>
+        </Tooltip>
 
         {/* Tab 3 — Bell (active) + badge */}
-        <div className={`${TAB_BASE} relative`} style={ACTIVE_TAB} title="Powiadomienia">
-          <div className="overflow-clip relative shrink-0 size-5">
-            <div className="absolute" style={{ inset: '5.21% 9.38%' }}>
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-bell.svg" draggable={false} />
+        <Tooltip text="Powiadomienia">
+          <div className={`${TAB_BASE} relative`} style={ACTIVE_TAB}>
+            <div className="overflow-clip relative shrink-0 size-5">
+              <div className="absolute" style={{ inset: '5.21% 9.38%' }}>
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-bell.svg" draggable={false} />
+              </div>
+            </div>
+            {/* Badge */}
+            <div
+              className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full flex items-center justify-center leading-none"
+              style={{
+                background: '#dd0e0e',
+                boxShadow: '0 2px 6px rgba(221,14,14,0.35), 0 1px 2px rgba(0,0,0,0.08)',
+                position: 'relative',
+                zIndex: 21,
+              }}
+            >
+              <span className="text-[10px] font-semibold text-white">30</span>
             </div>
           </div>
-          {/* Badge */}
-          <div
-            className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full flex items-center justify-center leading-none"
-            style={{ background: 'var(--l3)' }}
-          >
-            <span className="text-[10px] font-semibold text-white">30</span>
-          </div>
-        </div>
+        </Tooltip>
       </div>
 
     </div>

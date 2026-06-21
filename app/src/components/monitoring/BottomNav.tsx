@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, type RefObject } from 'react'
 import { MousePointer2, Ruler, MessageSquareText } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { RingIcon } from './RingIcon'
+import { Tooltip } from '@/components/ui/Tooltip'
 
 interface BottomNavProps {
   activeSection: 'monitoring' | 'analiza' | 'planowanie'
@@ -26,18 +26,6 @@ const PILL_OUTER: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   gap: '16px',
-}
-
-const LOGO_PILL: React.CSSProperties = {
-  background: 'linear-gradient(227.291deg, rgb(249,249,249) 27.268%, rgb(234,234,234) 83.104%)',
-  borderRadius: '12px',
-  paddingLeft: '8px',
-  paddingRight: '9px',
-  paddingTop: '4px',
-  paddingBottom: '4px',
-  display: 'flex',
-  alignItems: 'center',
-  flexShrink: 0,
 }
 
 const TOOLS_GROUP: React.CSSProperties = {
@@ -79,22 +67,12 @@ export function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
 
         {/* ── LOGO ── */}
         <div className="flex items-center shrink-0">
-          <div style={LOGO_PILL}>
-            <div className="flex items-center justify-center shrink-0" style={{ padding: '6px 10px' }}>
-              <RingIcon size={20} />
-            </div>
-            <div
-              className="flex items-center justify-center shrink-0"
-              style={{ minHeight: '32px', minWidth: '32px', paddingRight: '6px', paddingTop: '4px', paddingBottom: '4px' }}
-            >
-              <span
-                className="font-medium whitespace-nowrap select-none text-[#171717] leading-6"
-                style={{ fontSize: '18px', letterSpacing: '-0.5px' }}
-              >
-                Deceris
-              </span>
-            </div>
-          </div>
+          <img
+            src="/logo-deceris.png"
+            alt="Deceris"
+            draggable={false}
+            style={{ height: '40px', width: 'auto', display: 'block', userSelect: 'none', position: 'relative', zIndex: 21 }}
+          />
         </div>
 
         {/* ── NAV + TOOLS ── */}
@@ -150,17 +128,17 @@ export function BottomNav({ activeSection, onSectionChange }: BottomNavProps) {
           {/* GIS tools group */}
           <div style={TOOLS_GROUP}>
             {TOOLS.map(({ icon: Icon, label, active }) => (
-              <button
-                key={label}
-                title={label}
-                className={cn(
-                  'flex items-center justify-center size-8 rounded-lg cursor-pointer transition-colors duration-150',
-                  !active && 'text-muted-foreground hover:bg-black/5'
-                )}
-                style={active ? ACTIVE_TOOL : {}}
-              >
-                <Icon strokeWidth={1.5} className={cn('size-4.5', active ? 'text-[#0a0a0a]' : '')} />
-              </button>
+              <Tooltip key={label} text={label}>
+                <button
+                  className={cn(
+                    'flex items-center justify-center size-8 rounded-lg cursor-pointer transition-colors duration-150',
+                    !active && 'text-muted-foreground hover:bg-black/5'
+                  )}
+                  style={active ? ACTIVE_TOOL : {}}
+                >
+                  <Icon strokeWidth={1.5} className={cn('size-4.5', active ? 'text-[#0a0a0a]' : '')} />
+                </button>
+              </Tooltip>
             ))}
           </div>
         </div>

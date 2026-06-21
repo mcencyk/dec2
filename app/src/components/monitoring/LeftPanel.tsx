@@ -1,5 +1,11 @@
-import type { RefObject } from 'react'
-import { basins } from '@/data/mockData'
+import { useState, useRef, type RefObject } from 'react'
+import { CircleAlert } from 'lucide-react'
+import { LineChart, Line, AreaChart, Area, XAxis, CartesianGrid, ResponsiveContainer } from 'recharts'
+import type { Station, River } from '@/types'
+import { basins, rivers } from '@/data/mockData'
+import { AlertCard } from './AlertCard'
+import { SeverityBadge } from '@/components/ui/SeverityBadge'
+import { severityColor } from '@/lib/severity'
 
 // ── Figma design tokens (light panel surfaces) ─────────────────────────────────
 const SEV = {
@@ -26,8 +32,8 @@ interface ForecastItem {
 }
 
 type ObservedItem =
-  | { kind: 'station'; name: string; value: string; severity: SevKey; pct: number }
-  | { kind: 'river';   name: string; value: string; severity: SevKey; segs: string[] }
+  | { kind: 'river';   river: River }
+  | { kind: 'station'; station: Station }
 
 // ── Mock data ──────────────────────────────────────────────────────────────────
 // MOCK DATA — w produkcji z IMGW SHAPI
@@ -43,33 +49,83 @@ const forecasts: ForecastItem[] = [
 ]
 
 const anomalies = [
-  { station: 'Leśnica',     loc: 'Bystrzyca · km 26', type: 'no-data' as const, label: 'Brak odczytu',        extra: '248 cm (12:30)', time: '15:25' },
-  { station: 'Niepołomice', loc: 'Wisła · km 82',      type: 'spike'   as const, label: 'Nadzwyczajny wzrost', extra: '+ 40 cm / 1h',   time: '14:58' },
+  { station: 'Leśnica',     loc: 'Bystrzyca · km 26', type: 'no-data' as const, label: 'Brak odczytu',   extra: '248 cm (12:30)', time: '15:25' },
+  { station: 'Niepołomice', loc: 'Wisła · km 82',      type: 'spike'   as const, label: 'Szybki wzrost', extra: '+ 40 cm / 1h',   time: '14:58' },
 ]
 
+// MOCK DATA — w produkcji z IMGW SHAPI
 const observed: ObservedItem[] = [
-  { kind: 'station', name: 'Jarnołtów',    value: '312 cm',           severity: 'L2', pct: 72 },
-  { kind: 'river',   name: 'San',          value: 'Przemyśl · 285 cm', severity: 'L2', segs: ['#b8b8b8', '#ffab02', '#ffab02', '#fd6900'] },
-  { kind: 'station', name: 'Trestno',      value: '523 cm · km 222',   severity: 'L3', pct: 95 },
-  { kind: 'station', name: 'Oława',        value: '185 cm',            severity: 'L1', pct: 45 },
-  { kind: 'station', name: 'Krzyżanowice', value: '188 cm',            severity: 'L3', pct: 88 },
-  { kind: 'station', name: 'Ślęza',        value: '156 cm',            severity: 'L1', pct: 35 },
+  { kind: 'station', station: allStations.find(s => s.id === 'bys-jarnoltow')!    },
+  { kind: 'river',   river:   rivers.find(r => r.id === 'san')!                   },
+  { kind: 'station', station: allStations.find(s => s.id === 'odra-trestno')!     },
+  { kind: 'station', station: allStations.find(s => s.id === 'ola-olawa-miasto')! },
+  { kind: 'station', station: allStations.find(s => s.id === 'wid-krzyzanowice')! },
+  { kind: 'station', station: allStations.find(s => s.id === 'sle-bielany')!      },
 ]
 
-// ── Sparkline paths ───────────────────────────────────────────────────────────
-const SPARK: Record<SparkTrend, string> = {
-  sharp:    'M0,22 C12,18 24,12 38,6 S60,2 80,0',
-  moderate: 'M0,22 C14,18 30,14 44,10 S64,6 80,4',
-  slight:   'M0,21 C16,19 34,17 52,14 S68,12 80,10',
+// ── Chart data ────────────────────────────────────────────────────────────────
+// MOCK DATA — w produkcji z IMGW SHAPI
+// l0 = stacje w normie (malejące), l1/l2/l3 = rosnące alerty
+const ESCALATION_DATA = [
+  { t: '-24h', l0: 22, l1: 2,  l2: 1,  l3: 0 },
+  { t: '-18h', l0: 20, l1: 6,  l2: 4,  l3: 2 },
+  { t: '-12h', l0: 17, l1: 5,  l2: 8,  l3: 3 },
+  { t: '-6h',  l0: 14, l1: 9,  l2: 9,  l3: 4 },
+  { t: 'Teraz',l0: 12, l1: 8,  l2: 11, l3: 5 },
+]
+
+const SPARK_DATA: Record<SparkTrend, { v: number }[]> = {
+  sharp:    [3, 5, 8, 12, 17, 22, 28].map(v => ({ v })),
+  moderate: [5, 7, 9, 11, 14, 17, 21].map(v => ({ v })),
+  slight:   [8, 9, 10, 11, 12, 13, 15].map(v => ({ v })),
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
-function Sparkline({ trend, color }: { trend: SparkTrend; color: string }) {
+function Sparkline({ trend, color, uid }: { trend: SparkTrend; color: string; uid: string }) {
+  const gradId = `sg-${uid}`
   return (
-    <svg width="80" height="24" viewBox="0 0 80 24" fill="none" className="shrink-0">
-      <path d={SPARK[trend]} stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
-    </svg>
+    <ResponsiveContainer width="100%" height={28}>
+      <AreaChart data={SPARK_DATA[trend]} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
+        <defs>
+          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%"  stopColor={color} stopOpacity={0.30} />
+            <stop offset="95%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Area
+          dataKey="v"
+          stroke={color}
+          fill={`url(#${gradId})`}
+          strokeWidth={1.5}
+          dot={false}
+          isAnimationActive={false}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
+  )
+}
+
+function EscalationChart() {
+  return (
+    <div className="rounded-xl shrink-0 overflow-hidden" style={{ background: 'white', padding: '8px' }}>
+      <ResponsiveContainer width="100%" height={110}>
+        <LineChart data={ESCALATION_DATA} margin={{ top: 4, right: 20, bottom: 0, left: 20 }}>
+          <CartesianGrid horizontal={true} vertical={false} stroke="#f0f0f0" strokeWidth={1} />
+          <XAxis
+            dataKey="t"
+            tick={{ fontSize: 9, fill: '#27272a', fontFamily: 'Geist Variable' }}
+            axisLine={{ stroke: '#f0f0f0' }}
+            tickLine={false}
+            height={18}
+          />
+          <Line dataKey="l0" stroke="#c8c8c8" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
+          <Line dataKey="l1" stroke="#ffab02" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
+          <Line dataKey="l2" stroke="#fd6900" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
+          <Line dataKey="l3" stroke="#dd0e0e" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   )
 }
 
@@ -85,21 +141,6 @@ function SevBadge({ level }: { level: SevKey }) {
   )
 }
 
-function SevBadgeArrow({ level }: { level: SevKey }) {
-  const s = sevStyle(level)
-  return (
-    <span
-      className="text-[10px] font-semibold pl-1.5 pr-1 py-1 rounded-sm leading-none flex items-center gap-0.5 shrink-0"
-      style={{ color: s.color, background: s.bg, boxShadow: s.shadow }}
-    >
-      {level}
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-        <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </span>
-  )
-}
-
 function InfoBadge({ label }: { label: string }) {
   return (
     <span
@@ -111,58 +152,143 @@ function InfoBadge({ label }: { label: string }) {
   )
 }
 
+// ── Observed station card — mirrors AlertCard layout, progress bar instead of heatbar ──
+function ObservedStationCard({ station }: { station: Station }) {
+  const [isHovered, setIsHovered] = useState(false)
+  const pct = Math.min(100, Math.round(station.value / station.thresholds.l3 * 100))
+
+  return (
+    <div
+      className="w-full rounded-lg flex flex-col cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        background: isHovered ? '#ffffff' : '#fafafa',
+        boxShadow: isHovered ? SHADOW_MD : SHADOW_XS,
+        padding: '8px',
+        gap: '8px',
+        transition: 'background 150ms ease, box-shadow 150ms ease',
+      }}
+    >
+      <div className="flex items-start justify-between w-full gap-2">
+        <div className="flex flex-col min-w-0">
+          <span className="font-semibold text-[14px] leading-5 text-[#0a0a0a] truncate">{station.name}</span>
+          <span
+            className="text-[12px] leading-4 whitespace-nowrap"
+            style={{ color: isHovered ? '#0a0a0a' : '#737373', transition: 'color 150ms ease' }}
+          >
+            {station.river} · {station.value} cm
+          </span>
+        </div>
+        <SeverityBadge severity={station.severity} trend={station.trend} />
+      </div>
+      {/* Progress bar — same 12px container height as Heatbar */}
+      <div className="flex items-center w-full" style={{ height: '12px' }}>
+        <div
+          style={{
+            width: '100%',
+            height: isHovered ? '4px' : '2px',
+            borderRadius: '100px',
+            background: 'rgba(184,184,184,0.12)',
+            transition: 'height 150ms ease',
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ height: '100%', width: `${pct}%`, background: severityColor(station.severity), borderRadius: '100px' }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Layout constants ───────────────────────────────────────────────────────────
 const SECTION: React.CSSProperties = { background: '#f5f5f5', borderRadius: '12px', padding: '4px' }
 const CARD: React.CSSProperties    = { background: '#fafafa', borderRadius: '8px',  padding: '8px', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }
-const HDR: React.CSSProperties     = { background: '#fafafa', borderRadius: '8px',  padding: '8px 8px 8px 12px', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }
+const SHADOW_XS = '0 1px 2px 0 rgba(0,0,0,0.05)'
+const SHADOW_MD = '0px 4px 6px -1px rgba(0,0,0,0.10), 0px 2px 4px -2px rgba(0,0,0,0.10)'
+const HDR: React.CSSProperties     = { background: '#fafafa', borderRadius: '8px', padding: '8px 8px 8px 12px', boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }
 
 const SECTION_LABEL = 'text-[10px] font-semibold tracking-[0.07em] uppercase'
+
+function CardHover({
+  children,
+  style,
+  className = '',
+}: {
+  children: (hovered: boolean) => React.ReactNode
+  style?: React.CSSProperties
+  className?: string
+}) {
+  const [hovered, setIsHovered] = useState(false)
+  return (
+    <div
+      className={`rounded-lg shrink-0 ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        ...CARD,
+        background: hovered ? '#ffffff' : '#fafafa',
+        boxShadow: hovered ? SHADOW_MD : SHADOW_XS,
+        transition: 'background 150ms ease, box-shadow 150ms ease',
+        cursor: 'pointer',
+        ...style,
+      }}
+    >
+      {children(hovered)}
+    </div>
+  )
+}
 
 interface LeftPanelProps {
   mouseContainer?: RefObject<HTMLElement | null>
 }
 
 export function LeftPanel(_props: LeftPanelProps) {
+  const [isScrolled, setIsScrolled] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
   return (
-    <div className="lg-panel flex flex-col max-h-full min-h-0 w-68 shrink-0" style={{ padding: '4px' }}>
-      <div className="flex-1 panel-scroll min-h-0 flex flex-col" style={{ gap: '8px', paddingBottom: '4px' }}>
+    <div
+      className="lg-panel flex flex-col max-h-full min-h-0 w-68 shrink-0"
+      style={{ padding: '4px 4px 0 4px', gap: '8px' }}
+    >
 
-        {/* ── 1. ESKALACJA ──────────────────────────────────────────────────────── */}
+      {/* ── Pinned ESKALACJA header — content slides under it on scroll ── */}
+      <div
+        className="shrink-0 flex items-center gap-2"
+        style={{
+          background: '#dd0e0e',
+          borderRadius: '12px',
+          padding: '8px 12px',
+          minHeight: '36px',
+          position: 'relative',
+          zIndex: 2,
+          boxShadow: isScrolled
+            ? '0 4px 16px rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.10)'
+            : '0 0 0 rgba(0,0,0,0)',
+          transition: 'box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        <CircleAlert size={14} color="white" strokeWidth={2.5} style={{ flexShrink: 0 }} />
+        <span
+          className="text-[11px] font-semibold uppercase tracking-[0.07em]"
+          style={{ color: '#ffffff' }}
+        >
+          ESKALACJA
+        </span>
+      </div>
+
+      {/* ── Scrollable content — no gap, slides flush under ESKALACJA ─────── */}
+      <div
+        ref={scrollRef}
+        className="flex-1 panel-scroll min-h-0 flex flex-col"
+        onScroll={(e) => setIsScrolled((e.currentTarget as HTMLDivElement).scrollTop > 0)}
+        style={{ gap: '8px', paddingBottom: '4px' }}
+      >
+
+        {/* ── 1. WYKRES + STATYSTYKI ─────────────────────────────────────────── */}
         <section className="flex flex-col shrink-0" style={{ ...SECTION, gap: '4px' }}>
-
-          {/* Status row */}
-          <div
-            className="rounded-lg flex items-center justify-between shrink-0"
-            style={{
-              background: '#ffe4e4',
-              border: '1px solid rgba(221,14,14,0.09)',
-              filter: 'drop-shadow(0 0 6px rgba(241,42,42,0.16))',
-              padding: '12px',
-            }}
-          >
-            <span className={`${SECTION_LABEL}`} style={{ color: '#dd0e0e' }}>Eskalacja</span>
-            <span className="text-[10px]" style={{ color: '#27272a', opacity: 0 }}>16:53</span>
-          </div>
-
-          {/* Chart card */}
-          <div className="rounded-xl shrink-0" style={{ background: 'white', padding: '8px' }}>
-            <svg width="100%" height="96" viewBox="0 0 252 96" fill="none" preserveAspectRatio="none" className="block">
-              <line x1="0" y1="24" x2="252" y2="24" stroke="#f0f0f0" strokeWidth="1" />
-              <line x1="0" y1="48" x2="252" y2="48" stroke="#f0f0f0" strokeWidth="1" />
-              <line x1="0" y1="72" x2="252" y2="72" stroke="#f0f0f0" strokeWidth="1" />
-              <path d="M0,91 C60,90 140,89 252,88" stroke="#e4e4e7" strokeWidth="1" fill="none" strokeLinecap="round" />
-              <path d="M0,86 C28,82 56,78 88,74 S118,70 148,66 S178,62 210,56 252,50" stroke="#ffab02" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              <path d="M0,82 C22,74 42,64 66,58 S92,54 112,48 S132,44 152,46 S176,38 198,28 252,14" stroke="#fd6900" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              <path d="M0,78 C18,66 36,52 56,46 S76,40 96,34 S116,26 136,30 S158,18 180,12 S210,6 252,4" stroke="#dd0e0e" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-            </svg>
-            <div className="flex items-center justify-between" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '4px', height: '16px' }}>
-              {['-24h', '-18h', '-12h', '-6h', 'Teraz'].map(t => (
-                <span key={t} className="text-[9px] text-center" style={{ color: '#27272a' }}>{t}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* Stats 2×2 grid */}
+          <EscalationChart />
           <div className="grid grid-cols-2 shrink-0" style={{ gap: '4px' }}>
             {[
               { el: <SevBadge level="L3" />, val: statsL3 },
@@ -188,127 +314,101 @@ export function LeftPanel(_props: LeftPanelProps) {
           </div>
         </section>
 
-        {/* ── 2. PROGNOZY ───────────────────────────────────────────────────────── */}
+        {/* ── 2. PROGNOZY ───────────────────────────────────────────────────── */}
         <section className="flex flex-col shrink-0" style={{ ...SECTION, gap: '4px' }}>
           <div style={HDR}>
-            <span className={`${SECTION_LABEL}`} style={{ color: '#52525b' }}>Prognozy</span>
+            <span className={SECTION_LABEL} style={{ color: '#52525b' }}>Prognozy</span>
             <span className="text-[10px] font-semibold" style={{ color: '#52525b' }}>{forecasts.length}</span>
           </div>
 
           {forecasts.map(f => {
             const s = sevStyle(f.to)
             return (
-              <div key={f.station} className="rounded-lg flex flex-col shrink-0" style={{ ...CARD, gap: '8px' }}>
-                {/* Row 1: name + time */}
-                <div className="flex items-start justify-between">
-                  <div className="flex flex-col" style={{ gap: '2px' }}>
-                    <span className="text-[14px] font-semibold leading-5" style={{ color: '#0a0a0a' }}>{f.station}</span>
-                    <span className="text-[12px] leading-4" style={{ color: '#737373' }}>{f.current} cm</span>
-                  </div>
-                  <InfoBadge label={f.time} />
-                </div>
-                {/* Row 2: severity transition + sparkline */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center" style={{ gap: '4px' }}>
-                    {f.from != null && <SevBadge level={f.from} />}
-                    <span className="text-[11px]" style={{ color: '#52525b' }}>→</span>
-                    <SevBadge level={f.to} />
-                    <span className="text-[11px]" style={{ color: '#52525b' }}>·</span>
-                    <InfoBadge label={`szczyt za ${f.eta}`} />
-                  </div>
-                  <Sparkline trend={f.spark} color={s.color} />
-                </div>
-              </div>
+              <CardHover key={f.station} className="flex flex-col" style={{ gap: '8px' }}>
+                {() => (
+                  <>
+                    <div className="flex items-start justify-between">
+                      <div className="flex flex-col" style={{ gap: '2px' }}>
+                        <span className="text-[14px] font-semibold leading-5" style={{ color: '#0a0a0a' }}>{f.station}</span>
+                        <span className="text-[12px] leading-4" style={{ color: '#737373' }}>{f.current} cm</span>
+                      </div>
+                      <InfoBadge label={f.time} />
+                    </div>
+                    <div className="flex items-center" style={{ gap: '8px' }}>
+                      <div className="flex items-center shrink-0" style={{ gap: '4px', minWidth: '152px' }}>
+                        {f.from != null && <SevBadge level={f.from} />}
+                        <span className="text-[11px]" style={{ color: '#52525b' }}>→</span>
+                        <SevBadge level={f.to} />
+                        <span className="text-[11px]" style={{ color: '#52525b' }}>·</span>
+                        <InfoBadge label={`szczyt ${f.eta}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <Sparkline trend={f.spark} color={s.color} uid={f.station} />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </CardHover>
             )
           })}
         </section>
 
-        {/* ── 3. ANOMALIE ───────────────────────────────────────────────────────── */}
+        {/* ── 3. ANOMALIE ───────────────────────────────────────────────────── */}
         <section className="flex flex-col shrink-0" style={{ ...SECTION, gap: '4px' }}>
           <div style={HDR}>
-            <span className={`${SECTION_LABEL}`} style={{ color: '#52525b' }}>Anomalie</span>
+            <span className={SECTION_LABEL} style={{ color: '#52525b' }}>Anomalie</span>
             <span className="text-[10px] font-semibold" style={{ color: '#52525b' }}>{anomalies.length}</span>
           </div>
 
           {anomalies.map(a => (
-            <div key={a.station} className="rounded-lg flex flex-col shrink-0" style={{ ...CARD, gap: '6px' }}>
-              {/* Row 1: station + time */}
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col" style={{ gap: '2px' }}>
-                  <span className="text-[14px] font-semibold leading-5" style={{ color: '#0a0a0a' }}>{a.station}</span>
-                  <span className="text-[12px] leading-4" style={{ color: '#737373' }}>{a.loc}</span>
-                </div>
-                <InfoBadge label={a.time} />
-              </div>
-              {/* Row 2: type badge + value */}
-              <div className="flex items-center" style={{ gap: '6px' }}>
-                <span
-                  className="flex items-center text-[11px] font-medium px-1.5 py-1 rounded-md shrink-0"
-                  style={{ gap: '4px', background: 'rgba(0,0,0,0.05)', color: '#52525b' }}
-                >
-                  {a.type === 'no-data' ? (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                      <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  ) : (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                      <path d="M3 17l4-4 4 4 8-10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                  {a.label}
-                </span>
-                <span className="text-[11px]" style={{ color: '#52525b' }}>·</span>
-                <span className="text-[11px] font-mono" style={{ color: '#737373' }}>{a.extra}</span>
-              </div>
-            </div>
+            <CardHover key={a.station} className="flex flex-col" style={{ gap: '6px' }}>
+              {() => (
+                <>
+                  <div className="flex items-start justify-between">
+                    <div className="flex flex-col" style={{ gap: '2px' }}>
+                      <span className="text-[14px] font-semibold leading-5" style={{ color: '#0a0a0a' }}>{a.station}</span>
+                      <span className="text-[12px] leading-4" style={{ color: '#737373' }}>{a.loc}</span>
+                    </div>
+                    <InfoBadge label={a.time} />
+                  </div>
+                  <div className="flex items-center" style={{ gap: '6px' }}>
+                    <span
+                      className="flex items-center text-[11px] font-medium px-1.5 py-1 rounded-md shrink-0"
+                      style={{ gap: '4px', background: 'rgba(0,0,0,0.05)', color: '#52525b' }}
+                    >
+                      {a.type === 'no-data' ? (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      ) : (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M3 17l4-4 4 4 8-10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                      {a.label}
+                    </span>
+                    <span className="text-[11px]" style={{ color: '#52525b' }}>·</span>
+                    <span className="text-[11px] font-mono" style={{ color: '#737373' }}>{a.extra}</span>
+                  </div>
+                </>
+              )}
+            </CardHover>
           ))}
         </section>
 
-        {/* ── 4. OBSERWOWANE ────────────────────────────────────────────────────── */}
+        {/* ── 4. OBSERWOWANE ────────────────────────────────────────────────── */}
         <section className="flex flex-col shrink-0" style={{ ...SECTION, gap: '4px' }}>
           <div style={HDR}>
-            <span className={`${SECTION_LABEL}`} style={{ color: '#52525b' }}>Obserwowane</span>
+            <span className={SECTION_LABEL} style={{ color: '#52525b' }}>Obserwowane</span>
             <span className="text-[10px] font-semibold" style={{ color: '#52525b' }}>{observed.length}</span>
           </div>
 
           {observed.map(o => {
-            const s = sevStyle(o.severity)
-            if (o.kind === 'river') {
-              return (
-                <div key={o.name} className="rounded-lg flex flex-col shrink-0" style={{ ...CARD, gap: '8px' }}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col" style={{ gap: '2px' }}>
-                      <span className="text-[14px] font-semibold leading-5" style={{ color: '#0a0a0a' }}>{o.name}</span>
-                      <span className="text-[12px] leading-4" style={{ color: '#737373' }}>{o.value}</span>
-                    </div>
-                    <SevBadgeArrow level={o.severity} />
-                  </div>
-                  <div className="flex w-full" style={{ gap: '2px' }}>
-                    {o.segs.map((c, i) => (
-                      <div key={i} className="flex-1 rounded-full" style={{ height: '2px', background: c }} />
-                    ))}
-                  </div>
-                </div>
-              )
-            }
-            return (
-              <div key={o.name} className="rounded-lg flex flex-col shrink-0" style={{ ...CARD, gap: '8px' }}>
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col" style={{ gap: '2px' }}>
-                    <span className="text-[14px] font-semibold leading-5" style={{ color: '#0a0a0a' }}>{o.name}</span>
-                    <span className="text-[12px] leading-4" style={{ color: '#737373' }}>{o.value}</span>
-                  </div>
-                  <SevBadgeArrow level={o.severity} />
-                </div>
-                <div className="w-full rounded-full overflow-hidden" style={{ height: '2px', background: 'rgba(184,184,184,0.12)' }}>
-                  <div className="h-full rounded-full" style={{ width: `${o.pct}%`, background: s.color }} />
-                </div>
-              </div>
-            )
+            if (o.kind === 'river') return <AlertCard key={o.river.id} river={o.river} hideTime />
+            return <ObservedStationCard key={o.station.id} station={o.station} />
           })}
         </section>
 
-        <div style={{ height: '4px', flexShrink: 0 }} />
       </div>
     </div>
   )

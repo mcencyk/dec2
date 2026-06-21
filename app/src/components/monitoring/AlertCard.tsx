@@ -10,12 +10,13 @@ interface AlertCardProps {
   selected?: boolean
   hoveredStationId?: string | null
   onStationHover?: (id: string | null) => void
+  hideTime?: boolean
 }
 
 const SHADOW_XS = '0px 1px 2px 0px rgba(0,0,0,0.05)'
 const SHADOW_MD = '0px 4px 6px -1px rgba(0,0,0,0.1), 0px 2px 4px -2px rgba(0,0,0,0.1)'
 
-export function AlertCard({ river, onClick, selected, hoveredStationId, onStationHover }: AlertCardProps) {
+export function AlertCard({ river, onClick, selected, hoveredStationId, onStationHover, hideTime }: AlertCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const dominant = dominantStation(river.stations)
   const severity = maxSeverity(river.stations)
@@ -54,7 +55,7 @@ export function AlertCard({ river, onClick, selected, hoveredStationId, onStatio
             {dominant.name} · {dominant.value} cm
           </span>
         </div>
-        <SeverityBadge severity={severity} trend={dominant.trend} time={dominant.lastUpdate} />
+        <SeverityBadge severity={severity} trend={dominant.trend} time={hideTime ? undefined : dominant.lastUpdate} />
       </div>
 
       {/* Heatbar */}

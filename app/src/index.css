@@ -279,10 +279,19 @@
   background: rgba(0, 0, 0, 0.18);
 }
 
+/* Variant: always-visible scrollbar (left panel) */
+.panel-scroll-always {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+.panel-scroll-always::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+
 /* ─── Animations ────────────────────────────────────────────────────── */
 @keyframes glow-pulse {
-  0%, 100% { opacity: 0.18; }
-  50%       { opacity: 0.35; }
+  0%, 100% { opacity: 0.10; }
+  50%       { opacity: 0.20; }
 }
 .animate-glow-pulse {
   animation: glow-pulse 2.8s ease-in-out infinite;
