@@ -62,12 +62,12 @@ export function LeftToolbar({ onZoomIn, onZoomOut }: LeftToolbarProps) {
           </div>
         </Tooltip>
 
-        {/* Tab 3 — History */}
-        <Tooltip text="Historia">
+        {/* Tab 3 — Mapa */}
+        <Tooltip text="Mapa">
           <div className={`${TAB_BASE} hover:bg-black/5`}>
             <div className="overflow-clip relative shrink-0 size-5">
-              <div className="absolute inset-[9.38%]">
-                <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-history.svg" draggable={false} />
+              <div className="absolute" style={{ inset: '10.36% 9.38% 10.35% 9.37%' }}>
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-map.svg" draggable={false} />
               </div>
             </div>
           </div>

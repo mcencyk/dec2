@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { RefObject } from 'react'
 import { Search } from 'lucide-react'
+import { Tooltip } from '@/components/ui/Tooltip'
 import { AlertCard } from './AlertCard'
 import { basins } from '@/data/mockData'
 import type { River } from '@/types'
@@ -23,7 +24,7 @@ export function RightPanel({ selectedRiverId, onSelectRiver, hoveredStationId, o
       className="lg-panel flex flex-col max-h-full min-h-0 w-70 shrink-0"
       style={{ padding: '4px 4px 0 4px', gap: '8px' }}
     >
-      {/* Search bar */}
+      {/* Search bar with inline filter button */}
       <div
         className="flex items-center shrink-0 cursor-text"
         onMouseEnter={() => setSearchHovered(true)}
@@ -32,7 +33,7 @@ export function RightPanel({ selectedRiverId, onSelectRiver, hoveredStationId, o
           background: 'white',
           border: `1px solid ${searchHovered ? '#a1a1aa' : '#d4d4d4'}`,
           borderRadius: '12px',
-          padding: '8px 8px 8px 12px',
+          padding: '4px 4px 4px 12px',
           minHeight: '36px',
           boxShadow: searchHovered
             ? '0px 2px 6px rgba(0,0,0,0.10)'
@@ -43,9 +44,23 @@ export function RightPanel({ selectedRiverId, onSelectRiver, hoveredStationId, o
       >
         <Search style={{ width: '16px', height: '16px', color: '#737373', flexShrink: 0 }} />
         <input
-          placeholder="Szukaj stacji / akwenu / alertu…"
+          placeholder="Szukaj..."
           className="flex-1 bg-transparent text-[14px] leading-5 text-[#0a0a0a] placeholder:text-[#737373] outline-none border-none cursor-text"
         />
+
+        {/* Filter button — inside search pill, right side */}
+        <Tooltip text="Filtry" side="bottom">
+          <div
+            className="flex items-center justify-center shrink-0 cursor-pointer rounded-lg transition-colors duration-180 hover:bg-black/5"
+            style={{ width: '28px', height: '28px' }}
+          >
+            <div className="overflow-clip relative shrink-0 size-4">
+              <div className="absolute" style={{ inset: '21.88% 9.38%' }}>
+                <img alt="Filtry" className="absolute block inset-0 max-w-none size-full" src="/toolbar-filter.svg" draggable={false} />
+              </div>
+            </div>
+          </div>
+        </Tooltip>
       </div>
 
       {/* Alert list */}

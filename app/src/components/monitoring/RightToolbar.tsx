@@ -74,12 +74,12 @@ export function RightToolbar() {
           </div>
         </Tooltip>
 
-        {/* Tab 2 — Filter */}
-        <Tooltip text="Filtry">
+        {/* Tab 2 — Historia */}
+        <Tooltip text="Historia">
           <div className={`${TAB_BASE} hover:bg-black/5`}>
             <div className="overflow-clip relative shrink-0 size-5">
-              <div className="absolute" style={{ inset: '21.88% 9.38%' }}>
-                <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-filter.svg" draggable={false} />
+              <div className="absolute inset-[9.38%]">
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-history.svg" draggable={false} />
               </div>
             </div>
           </div>
