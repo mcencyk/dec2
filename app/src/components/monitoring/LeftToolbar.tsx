@@ -1,4 +1,10 @@
+import type React from 'react'
 import { Tooltip } from '@/components/ui/Tooltip'
+
+interface LeftToolbarProps {
+  onZoomIn?:  () => void
+  onZoomOut?: () => void
+}
 
 const PILL: React.CSSProperties = {
   paddingTop: '4px',
@@ -28,7 +34,7 @@ const ACTIVE_TAB: React.CSSProperties = {
 
 const TAB_BASE = 'flex items-center justify-center min-h-8 min-w-8 px-2.5 py-[5.5px] rounded-lg shrink-0 cursor-pointer transition-colors duration-180'
 
-export function LeftToolbar() {
+export function LeftToolbar({ onZoomIn, onZoomOut }: LeftToolbarProps) {
   return (
     <div className="lg-pill" style={PILL}>
 
@@ -70,7 +76,7 @@ export function LeftToolbar() {
 
       {/* Standalone tab — Plus / Zoom in */}
       <Tooltip text="Powiększ">
-        <div className={`${TAB_BASE} hover:bg-black/5`}>
+        <div className={`${TAB_BASE} hover:bg-black/5`} onClick={onZoomIn}>
           <div className="overflow-clip relative shrink-0 size-5">
             <div className="absolute inset-[17.71%]">
               <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-plus.svg" draggable={false} />
@@ -81,7 +87,7 @@ export function LeftToolbar() {
 
       {/* Standalone tab — Minus / Zoom out */}
       <Tooltip text="Pomniejsz">
-        <div className={`${TAB_BASE} hover:bg-black/5`}>
+        <div className={`${TAB_BASE} hover:bg-black/5`} onClick={onZoomOut}>
           <div className="overflow-clip relative shrink-0 size-5">
             <div className="absolute" style={{ inset: '46.88% 17.71%' }}>
               <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-minus.svg" draggable={false} />
