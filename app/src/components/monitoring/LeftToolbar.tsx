@@ -38,7 +38,7 @@ export function LeftToolbar({ onZoomIn, onZoomOut }: LeftToolbarProps) {
   return (
     <div className="lg-pill" style={PILL}>
 
-      {/* Inner tabs group: Grid (active) · Layers · History */}
+      {/* Inner tabs group: Grid (active) · Layers */}
       <div style={INNER_GROUP}>
         {/* Tab 1 — LayoutGrid (active) */}
         <Tooltip text="Inspektor">
@@ -62,16 +62,6 @@ export function LeftToolbar({ onZoomIn, onZoomOut }: LeftToolbarProps) {
           </div>
         </Tooltip>
 
-        {/* Tab 3 — Mapa */}
-        <Tooltip text="Mapa">
-          <div className={`${TAB_BASE} hover:bg-black/5`}>
-            <div className="overflow-clip relative shrink-0 size-5">
-              <div className="absolute" style={{ inset: '10.36% 9.38% 10.35% 9.37%' }}>
-                <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-map.svg" draggable={false} />
-              </div>
-            </div>
-          </div>
-        </Tooltip>
       </div>
 
       {/* Standalone tab — Plus / Zoom in */}

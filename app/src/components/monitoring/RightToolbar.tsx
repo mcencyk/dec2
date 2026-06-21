@@ -50,31 +50,20 @@ export function RightToolbar() {
         </div>
       </Tooltip>
 
-      {/* Standalone tab — Refresh */}
-      <Tooltip text="Odśwież">
+      {/* Standalone tab — Settings */}
+      <Tooltip text="Ustawienia">
         <div className={`${TAB_BASE} hover:bg-black/5`}>
           <div className="overflow-clip relative shrink-0 size-5">
-            <div className="absolute inset-[9.38%]">
-              <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-refresh.svg" draggable={false} />
+            <div className="absolute inset-[13.54%]">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-settings.svg" draggable={false} />
             </div>
           </div>
         </div>
       </Tooltip>
 
-      {/* Inner tabs group: Settings · Filter · Bell (active + badge) */}
+      {/* Inner tabs group: Historia · Bell (active + badge) */}
       <div style={INNER_GROUP}>
-        {/* Tab 1 — Settings */}
-        <Tooltip text="Ustawienia">
-          <div className={`${TAB_BASE} hover:bg-black/5`}>
-            <div className="overflow-clip relative shrink-0 size-5">
-              <div className="absolute inset-[13.54%]">
-                <img alt="" className="absolute block inset-0 max-w-none size-full" src="/toolbar-settings.svg" draggable={false} />
-              </div>
-            </div>
-          </div>
-        </Tooltip>
-
-        {/* Tab 2 — Historia */}
+        {/* Tab 1 — Historia */}
         <Tooltip text="Historia">
           <div className={`${TAB_BASE} hover:bg-black/5`}>
             <div className="overflow-clip relative shrink-0 size-5">
@@ -85,7 +74,7 @@ export function RightToolbar() {
           </div>
         </Tooltip>
 
-        {/* Tab 3 — Bell (active) + badge */}
+        {/* Tab 2 — Bell (active) + badge */}
         <Tooltip text="Powiadomienia">
           <div className={`${TAB_BASE} relative`} style={ACTIVE_TAB}>
             <div className="overflow-clip relative shrink-0 size-5">
