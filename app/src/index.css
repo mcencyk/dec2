@@ -184,13 +184,16 @@
   backdrop-filter: blur(28px) saturate(2.2) brightness(1.06);
   -webkit-backdrop-filter: blur(28px) saturate(2.2) brightness(1.06);
   border: 1px solid rgba(255, 255, 255, 0.62);
-  /* Chrome: forces compositor layer so backdrop-filter captures WebGL canvas */
   will-change: transform;
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.15),
     0 4px 12px rgba(0, 0, 0, 0.08),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.90),
     inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+}
+/* Chrome: backdrop-filter doesn't capture WebGL canvas — raise opacity so panels are readable */
+.browser-chrome .lg-panel {
+  background: rgba(255, 255, 255, 0.72);
 }
 
 /* Specular highlight — light refraction on top-right edge */
@@ -224,6 +227,10 @@
     0 3px 8px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.90),
     inset 0 -0.5px 0 rgba(0, 0, 0, 0.03);
+}
+/* Chrome: same fix for pills */
+.browser-chrome .lg-pill {
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .lg-pill::after {
