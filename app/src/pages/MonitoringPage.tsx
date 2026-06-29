@@ -16,7 +16,7 @@ export function MonitoringPage() {
   const [hoveredStationId, setHoveredStationId] = useState<string | null>(null)
 
   return (
-    <div ref={containerRef} className="relative w-full h-full overflow-hidden bg-background">
+    <div ref={containerRef} className="relative w-full h-full overflow-hidden bg-background" style={{ filter: 'blur(0px)' }}>
       {/* Map (full-screen background) */}
       <div className="absolute inset-0 z-0">
         <MapView
