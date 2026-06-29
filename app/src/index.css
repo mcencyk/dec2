@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/montserrat";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -82,13 +83,13 @@
 
   /* Severity — light mode (exact Figma values) */
   --l0: #b8b8b8;
-  --l1: #ffab02;
-  --l2: #fd6900;
-  --l3: #dd0e0e;
+  --l1: #f89d00;
+  --l2: #fd7200;
+  --l3: #e50004;
   --l0-bg: rgba(184, 184, 184, 0.12);
-  --l1-bg: rgba(255, 196, 78, 0.20);
-  --l2-bg: rgba(253, 122, 0, 0.09);
-  --l3-bg: rgba(221, 14, 14, 0.09);
+  --l1-bg: rgba(254, 182, 0, 0.12);
+  --l2-bg: rgba(253, 114, 0, 0.09);
+  --l3-bg: rgba(229, 0, 4, 0.09);
 
   /* Figma native tokens (aliases) */
   --severity-l0: var(--l0);
@@ -183,6 +184,8 @@
   backdrop-filter: blur(28px) saturate(2.2) brightness(1.06);
   -webkit-backdrop-filter: blur(28px) saturate(2.2) brightness(1.06);
   border: 1px solid rgba(255, 255, 255, 0.62);
+  /* Chrome: forces compositor layer so backdrop-filter captures WebGL canvas */
+  will-change: transform;
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.15),
     0 4px 12px rgba(0, 0, 0, 0.08),
@@ -190,14 +193,14 @@
     inset 0 -1px 0 rgba(0, 0, 0, 0.03);
 }
 
-/* Specular highlight — light refraction on top-left edge */
+/* Specular highlight — light refraction on top-right edge */
 .lg-panel::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background: linear-gradient(
-    148deg,
+    225deg,
     rgba(255, 255, 255, 0.40) 0%,
     rgba(255, 255, 255, 0.08) 28%,
     transparent 55%
@@ -215,6 +218,7 @@
   backdrop-filter: blur(24px) saturate(2.0) brightness(1.06);
   -webkit-backdrop-filter: blur(24px) saturate(2.0) brightness(1.06);
   border: 1px solid rgba(255, 255, 255, 0.65);
+  will-change: transform;
   box-shadow:
     0 10px 32px rgba(0, 0, 0, 0.12),
     0 3px 8px rgba(0, 0, 0, 0.08),
