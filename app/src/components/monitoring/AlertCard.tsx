@@ -55,7 +55,7 @@ export function AlertCard({ river, onClick, selected, hoveredStationId, onStatio
             {dominant.name} · {dominant.value} cm
           </span>
         </div>
-        <SeverityBadge severity={severity} trend={dominant.trend} time={hideTime ? undefined : dominant.lastUpdate} />
+        <SeverityBadge severity={severity} trend={dominant.trend} time={hideTime ? undefined : dominant.lastUpdate} hovered={showHoverStyle} />
       </div>
 
       {/* Heatbar */}

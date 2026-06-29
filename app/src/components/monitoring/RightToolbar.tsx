@@ -86,8 +86,8 @@ export function RightToolbar() {
             <div
               className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full flex items-center justify-center leading-none"
               style={{
-                background: '#dd0e0e',
-                boxShadow: '0 2px 6px rgba(221,14,14,0.35), 0 1px 2px rgba(0,0,0,0.08)',
+                background: '#e50004',
+                boxShadow: '0 2px 6px rgba(229,0,4,0.35), 0 1px 2px rgba(0,0,0,0.08)',
                 position: 'relative',
                 zIndex: 21,
               }}

@@ -14,7 +14,7 @@ interface RightPanelProps {
   mouseContainer?: RefObject<HTMLElement | null>
 }
 
-const BADGE_COLOR = '#dd0e0e'
+const BADGE_COLOR = '#e50004'
 
 export function RightPanel({ selectedRiverId, onSelectRiver, hoveredStationId, onStationHover }: RightPanelProps) {
   const [searchHovered, setSearchHovered] = useState(false)

@@ -1,7 +1,7 @@
 # Deceris — CLAUDE.md
 **Projekt:** Deceris  
 **Ścieżka:** `/Users/mateuszcencyk/Projekty/Code/Deceris/`  
-**Data aktualizacji:** 2026-06-19 (v4)
+**Data aktualizacji:** 2026-06-26 (v5)
 
 ---
 
@@ -47,7 +47,10 @@ Pełna analiza: `materials/COMPETITIVE_ANALYSIS.md`
 
 ### Strategia integracji danych — nie reinwentujemy źródeł
 
-- **IMGW SHAPI** — przejąć jako źródło real-time, nie duplikować infrastruktury pomiarowej
+- **IMGW SHAPI / danepubliczne.imgw.pl** — przejąć jako źródło real-time, nie duplikować infrastruktury pomiarowej
+- **IMGW `warningshydro`** — API ostrzeżeń hydrologicznych = mechanizm triggerowania alertów; kody `kod_zlewni` mapują na MPHP → bezpośredni driver pipeline Decerisa
+- **IMGW `warningsmeteo`** — ostrzeżenia meteorologiczne ("Intensywne opady deszczu") = pre-signal powodzi godziny/doby przed przekroczeniem progów hydrologicznych
+- **IMGW Radar SRI** — real-time kompozyt natężenia opadów (mm/h) z 10+ radarów; warstwa analityczna "gdzie teraz pada i jak mocno"
 - **ISOK WMS** — embedować strefy Q1%/Q10%/Q0.2% jako warstwy podkładowe
 - **BDOT10k** — budynki, drogi, infrastruktura krytyczna jako kontekst zalewu
 - **NMT 1m** — interpolacja zasięgu zalewu i kalkulacja objętości wałów
@@ -747,7 +750,7 @@ Widoczna tylko gdy są aktywne anomalie (brak odczytu > 30 min, wartość spoza 
 
 ### 5. Stan danych
 
-Per źródło danych: kropka statusu (zielona = live, pomarańczowa = opóźnienie, czerwona = brak) + czas ostatniego sync. Źródła: IMGW SHAPI, ISOK WMS, NMT 1m.
+Per źródło danych: kropka statusu (zielona = live, pomarańczowa = opóźnienie, czerwona = brak) + czas ostatniego sync. Źródła: IMGW SHAPI (hydro), IMGW synop (meteo), IMGW ostrzeżenia, ISOK WMS, NMT 1m.
 
 ### 6. Filtry mapy
 
@@ -903,8 +906,12 @@ Wszystko skupia się wokół mapy i jej warstw. Cztery grupy według charakteru 
 | Strefy zagrożenia Q1% | ISOK | obszar zalewowy raz na 100 lat | ★★★ |
 | Strefy zagrożenia Q0.2% | ISOK | obszar zalewowy raz na 500 lat | ★★ |
 | Retencja / zbiorniki | MPHP / BDOT10k | zbiorniki wodne, poldery | ★★ |
+| Radar SRI (opady) | IMGW danepubliczne | natężenie opadów mm/h z kompozytu radarowego | ★★ |
+| Stacje meteo (opady) | IMGW synop | punktowe pomiary `suma_opadu` z 60+ stacji | ★ |
 
 Q10% / Q1% / Q0.2% to standardowe polskie klasy zagrożenia wg dyrektywy powodziowej UE — core Decerisa.
+
+Radar SRI i stacje meteo są widoczne domyślnie wyłącznie w trybie ANALIZY — w Monitoringu zbyt duże obciążenie percepcyjne. W ANALIZIE pomagają ocenić czy sytuacja będzie się pogarszać (opady upstream od stacji alarmowej).
 
 ### 3. Warstwy infrastrukturalne (BDOT10k)
 
@@ -1132,14 +1139,128 @@ Carto Positron — sandwich: light_nolabels + light_only_labels
 
 ## Źródła danych (docelowe)
 
-- **IMGW SHAPI** — real-time dane hydrologiczne z wodomierzy
+- **IMGW SHAPI** — real-time dane hydrologiczne z wodomierzy (szczegółowe, per stacja)
+- **danepubliczne.imgw.pl API** — publiczny REST API IMGW: hydro, synop, ostrzeżenia; uproszczony podzbiór SHAPI, bezpłatny, bez klucza
 - **NMT 1m** — Numeryczny Model Terenu (interpolacja obszarów zalewowych)
 - **BDOT10k** — budynki, drogi, infrastruktura
 - **ISOK** — mapy zagrożenia powodziowego
 - **MPHP** — sieć rzeczna
+- **IMGW Radar SRI** — kompozyt radarowy natężenia opadów (dane binarne ODIM HDF5 + GRIB)
+- **IMGW COSMO 2k8** — model NWP, prognoza opadów 72h, format GRIB, 4 runy/dobę
+
+### IMGW API — endpointy publiczne (danepubliczne.imgw.pl)
+
+Bezpłatne, bez uwierzytelnienia. Obowiązek atrybuowania źródła: "Dane IMGW-PIB".
+
+**Dane hydrologiczne:**
+```
+GET https://danepubliczne.imgw.pl/api/data/hydro/
+GET https://danepubliczne.imgw.pl/api/data/hydro/id/{id_stacji}
+GET https://danepubliczne.imgw.pl/api/data/hydro/station/{nazwa}
+
+Pola: id_stacji, stacja, rzeka, wojewodztwo, lon, lat
+      stan_wody (cm) + stan_wody_data_pomiaru
+      przeplyw (m³/s) + przeplyw_data
+      temperatura_wody, zjawisko_lodowe, zjawisko_zarastania
+```
+
+**Dane meteorologiczne (stacje synoptyczne):**
+```
+GET https://danepubliczne.imgw.pl/api/data/synop/
+GET https://danepubliczne.imgw.pl/api/data/synop/id/{id_stacji}
+GET https://danepubliczne.imgw.pl/api/data/synop/station/{nazwa}
+Obsługuje format: /format/json|xml|csv|html
+
+Pola: id_stacji, stacja, data_pomiaru, godzina_pomiaru
+      temperatura (°C), predkosc_wiatru, kierunek_wiatru (°)
+      wilgotnosc_wzgledna (%), suma_opadu (mm), cisnienie (hPa)
+```
+
+**Ostrzeżenia hydrologiczne — kluczowy trigger pipeline:**
+```
+GET https://danepubliczne.imgw.pl/api/data/warningshydro
+
+Pola: stopień (-1=susza, 1/2/3=wezbranie/alarm), zdarzenie
+      data_od, data_do, prawdopodobienstwo (%)
+      biuro (Biuro Prognoz Hydrologicznych)
+      przebieg (opis słowny sytuacji)
+      obszary[]: { wojewodztwo, opis, kod_zlewni[] }
+        ↑ kod_zlewni = kody MPHP (format: Z_P_{TERYT-WOJ}_{kod})
+          mapują bezpośrednio na zlewnie w hierarchii Decerisa
+```
+
+**Ostrzeżenia meteorologiczne — pre-signal:**
+```
+GET https://danepubliczne.imgw.pl/api/data/warningsmeteo
+
+Pola: id, nazwa_zdarzenia (np. "Intensywne opady deszczu", "Burza z gradem")
+      stopień (1/2/3), prawdopodobienstwo
+      obowiazuje_od, obowiazuje_do, tresc, komentarz, biuro
+      teryt[] — kody TERYT powiatów/gmin objętych ostrzeżeniem
+```
+
+**Produkty binarne (radar + model):**
+```
+GET https://danepubliczne.imgw.pl/api/data/product
+  → lista 42 produktów:
+    COMPO_SRI.comp.sri     — kompozyt radarowy SRI (Surface Rainfall Intensity)
+    COMPO_SRI.comp.sri_h5  — j.w. format ODIM HDF5
+    COMPO_CMAX_250.comp.cmax — kompozyt radarowy CMAX (max echo)
+    COMPO_EHT.comp.eht     — wysokość echa (Echo Top Height)
+    COMPO_PAC.comp.pac     — akumulacja opadów radarowych
+    COMPO_CAPPI.comp.cappi — CAPPI (stała wysokość)
+    COSMO_HVD_{00|06|12|18}_{00|01} — model COSMO 2k8, GRIB, 4 runy/dobę
+
+GET https://danepubliczne.imgw.pl/api/data/product/id/{id}
+  → pobieranie konkretnego produktu (plik binarny)
+```
+
+**Uwagi implementacyjne:**
+- Dane hydro i synop są aktualizowane co ~10 min (godzina pomiaru w polu timestamp)
+- `warningshydro` i `warningsmeteo` są aktualizowane przy wydaniu nowego ostrzeżenia
+- `przeplyw` (m³/s) w hydro API jest bardziej stabilnym wskaźnikiem ryzyka niż sam `stan_wody` (cm) — warto rozważyć włączenie do modelu severity
+- COSMO GRIB i radar HDF5 wymagają dedykowanego parsera (pygrib, h5py) — złożone w konsumpcji, używać przez dedykowany backend
+
+### meteo.imgw.pl — zasoby webowe (brak publicznego API)
+
+Serwis wizualizacyjny IMGW — nie ma publicznego API, ale wartościowy jako referencja i benchmark UX.
+
+| Produkt | Opis | Horyzont |
+|---------|------|----------|
+| INCA/SCENE 1.0km | Nowcasting opadów | 8h do przodu |
+| AROME | Model NWP wysokiej rozdzielczości | 30–48h |
+| COSMO | Model NWP (identyczny z danepubliczne) | 72h |
+| ALARO | Model LACE | 72h |
+| ICON-FWI | Model globalny + wskaźnik pożarowy | 10 dni |
+| GFS | Model globalny NOAA | 10 dni |
+| Radary | Kompozyt radarowy live | real-time |
+| Satelita | Eumetsat — kanały VIS/IR | real-time |
+| Meteogram | Wykres prognoz per punkt | — |
+
+INCA/SCENE (1km, 8h) jest najważniejszy dla Decerisa — krótkoterminowa prognoza opadów na kilka godzin przed spłynięciem wody do rzeki. Brak API, ale IMGW udostępnia ją w serwisie — rozważyć WMS lub screen scraping w razie potrzeby.
+
+### Warstwa opadów — nowy wymiar modelu danych
+
+Do tej pory Deceris modelował wyłącznie `stan_wody` (reakcja). Opady to przyczyna — upstream signal z wyprzedzeniem 2–24h.
+
+**Źródła opadów (od najszybszego do najdokładniejszego):**
+
+| Źródło | Lag | Zasięg | Format | Rola w Decerisie |
+|--------|-----|--------|--------|-----------------|
+| Radar SRI (danepubliczne) | real-time | cała PL | HDF5/GRIB | Warstwa analityczna: "gdzie pada teraz i jak intensywnie" |
+| Synop suma_opadu | co 1h | ~60 stacji | JSON REST | Kalibracja radaru, punkty pomiarowe |
+| INCA/SCENE (meteo.imgw.pl) | +8h | cała PL | (brak API) | Wyprzedzenie dla operatora — nadchodzące opady |
+| COSMO 2k8 (danepubliczne) | +72h | cała PL | GRIB | Prognoza do planowania scenariuszy |
+
+**Integracja z alert pipeline:**
+- Gdy `warningsmeteo` wydaje "Intensywne opady deszczu" dla danego TERYT → Deceris może pokazać pre-alert "Ryzyko wezbrania" na akwenach w tej zlewni, zanim `warningshydro` się pojawi
+- Radar SRI + mapa zlewni MPHP = estymacja kiedy opady dotrą do wodowskazów
 
 ### Linki referencyjne
 - https://hydro.imgw.pl/#/
+- https://meteo.imgw.pl/
+- https://danepubliczne.imgw.pl/
+- https://danepubliczne.imgw.pl/apiinfo
 - https://isok.gov.pl/hydroportal.html
 - https://sip.lex.pl/akty-prawne/dzu-dziennik-ustaw/opracowywanie-map-zagrozenia-powodziowego-oraz-map-ryzyka-powodziowego-18768212
 - https://sites.research.google/floods/l/26.667095801104814/80.79345703125/6/g/CWC_015-MGD2LKN

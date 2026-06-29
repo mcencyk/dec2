@@ -9,9 +9,9 @@ import { severityColor } from '@/lib/severity'
 
 // ── Figma design tokens (light panel surfaces) ─────────────────────────────────
 const SEV = {
-  l1: { color: '#ffab02', bg: 'rgba(255,196,78,0.20)', shadow: '0 0 3px rgba(255,175,3,0.07), 0 0 2px rgba(255,175,3,0.07)' },
-  l2: { color: '#fd6900', bg: 'rgba(253,122,0,0.09)',  shadow: '0 0 3px rgba(253,126,0,0.07), 0 0 2px rgba(253,126,0,0.07)' },
-  l3: { color: '#dd0e0e', bg: 'rgba(221,14,14,0.09)',  shadow: '0 0 3px rgba(241,42,42,0.07), 0 0 2px rgba(241,42,42,0.07)' },
+  l1: { color: '#f89d00', bg: 'rgba(254,182,0,0.12)', shadow: '0 0 3px rgba(255,175,3,0.07), 0 0 2px rgba(255,175,3,0.07)' },
+  l2: { color: '#fd7200', bg: 'rgba(253,114,0,0.09)', shadow: '0 0 3px rgba(253,126,0,0.07), 0 0 2px rgba(253,126,0,0.07)' },
+  l3: { color: '#e50004', bg: 'rgba(229,0,4,0.09)',   shadow: '0 0 3px rgba(241,42,42,0.07), 0 0 2px rgba(241,42,42,0.07)' },
   info: { color: '#52525b', bg: 'rgba(184,184,184,0.12)' },
 } as const
 
@@ -120,9 +120,9 @@ function EscalationChart() {
             height={18}
           />
           <Line dataKey="l0" stroke="#c8c8c8" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
-          <Line dataKey="l1" stroke="#ffab02" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
-          <Line dataKey="l2" stroke="#fd6900" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
-          <Line dataKey="l3" stroke="#dd0e0e" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
+          <Line dataKey="l1" stroke="#f89d00" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
+          <Line dataKey="l2" stroke="#fd7200" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
+          <Line dataKey="l3" stroke="#e50004" strokeWidth={1.5} dot={false} isAnimationActive={false} type="monotone" />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -133,19 +133,19 @@ function SevBadge({ level }: { level: SevKey }) {
   const s = sevStyle(level)
   return (
     <span
-      className="text-[10px] font-semibold px-1.5 py-1 rounded-[4px] leading-none flex items-center shrink-0"
-      style={{ color: s.color, background: s.bg, boxShadow: s.shadow }}
+      className="text-[10px] font-semibold px-1.5 py-1 rounded-sm leading-none flex items-center shrink-0"
+      style={{ color: s.color, background: s.bg, border: `1px solid ${s.color}`, boxShadow: s.shadow }}
     >
       {level}
     </span>
   )
 }
 
-function InfoBadge({ label }: { label: string }) {
+function InfoBadge({ label, hovered }: { label: string; hovered?: boolean }) {
   return (
     <span
-      className="text-[10px] font-semibold px-1.5 h-5 rounded-[4px] flex items-center whitespace-nowrap shrink-0"
-      style={{ color: SEV.info.color, background: SEV.info.bg }}
+      className="text-[10px] font-semibold whitespace-nowrap shrink-0 leading-none"
+      style={{ color: hovered ? '#52525b' : '#8f8f8f' }}
     >
       {label}
     </span>
@@ -257,15 +257,16 @@ export function LeftPanel(_props: LeftPanelProps) {
       <div
         className="shrink-0 flex items-center gap-2"
         style={{
-          background: '#dd0e0e',
+          background: 'rgba(221,14,14,0.90)',
           borderRadius: '12px',
           padding: '8px 12px',
           minHeight: '36px',
           position: 'relative',
           zIndex: 2,
+          border: '1px solid rgba(229,0,4,0.09)',
           boxShadow: isScrolled
-            ? '0 4px 16px rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.10)'
-            : '0 0 0 rgba(0,0,0,0)',
+            ? '0 4px 16px rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.10), 0 0 12px 0 rgba(241,42,42,0.16)'
+            : '0 0 12px 0 rgba(241,42,42,0.16)',
           transition: 'box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
@@ -308,7 +309,7 @@ export function LeftPanel(_props: LeftPanelProps) {
             ].map(({ el, val }, i) => (
               <div key={i} className="rounded-lg flex items-center justify-between" style={CARD}>
                 {el}
-                <span className="text-[20px] font-semibold tabular-nums leading-none" style={{ color: '#0a0a0a' }}>{val}</span>
+                <span className="text-[14px] font-semibold leading-5 whitespace-nowrap" style={{ color: '#0a0a0a', fontFamily: "'Montserrat Variable', sans-serif" }}>{val}</span>
               </div>
             ))}
           </div>
@@ -325,22 +326,22 @@ export function LeftPanel(_props: LeftPanelProps) {
             const s = sevStyle(f.to)
             return (
               <CardHover key={f.station} className="flex flex-col" style={{ gap: '8px' }}>
-                {() => (
+                {(hovered) => (
                   <>
                     <div className="flex items-start justify-between">
                       <div className="flex flex-col" style={{ gap: '2px' }}>
                         <span className="text-[14px] font-semibold leading-5" style={{ color: '#0a0a0a' }}>{f.station}</span>
-                        <span className="text-[12px] leading-4" style={{ color: '#737373' }}>{f.current} cm</span>
+                        <span className="text-[12px] leading-4" style={{ color: hovered ? '#0a0a0a' : '#737373', transition: 'color 150ms ease' }}>{f.current} cm</span>
                       </div>
-                      <InfoBadge label={f.time} />
+                      <InfoBadge label={f.time} hovered={hovered} />
                     </div>
                     <div className="flex items-center" style={{ gap: '8px' }}>
                       <div className="flex items-center shrink-0" style={{ gap: '4px', minWidth: '152px' }}>
                         {f.from != null && <SevBadge level={f.from} />}
-                        <span className="text-[11px]" style={{ color: '#52525b' }}>→</span>
+                        <span className="text-[10px] font-semibold" style={{ color: '#8f8f8f' }}>→</span>
                         <SevBadge level={f.to} />
-                        <span className="text-[11px]" style={{ color: '#52525b' }}>·</span>
-                        <InfoBadge label={`szczyt ${f.eta}`} />
+                        <span className="text-[10px] font-semibold" style={{ color: '#8f8f8f' }}>·</span>
+                        <InfoBadge label={`za ${f.eta}`} hovered={hovered} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <Sparkline trend={f.spark} color={s.color} uid={f.station} />
@@ -362,19 +363,19 @@ export function LeftPanel(_props: LeftPanelProps) {
 
           {anomalies.map(a => (
             <CardHover key={a.station} className="flex flex-col" style={{ gap: '6px' }}>
-              {() => (
+              {(hovered) => (
                 <>
                   <div className="flex items-start justify-between">
                     <div className="flex flex-col" style={{ gap: '2px' }}>
                       <span className="text-[14px] font-semibold leading-5" style={{ color: '#0a0a0a' }}>{a.station}</span>
-                      <span className="text-[12px] leading-4" style={{ color: '#737373' }}>{a.loc}</span>
+                      <span className="text-[12px] leading-4" style={{ color: hovered ? '#0a0a0a' : '#737373', transition: 'color 150ms ease' }}>{a.loc}</span>
                     </div>
-                    <InfoBadge label={a.time} />
+                    <InfoBadge label={a.time} hovered={hovered} />
                   </div>
                   <div className="flex items-center" style={{ gap: '6px' }}>
                     <span
-                      className="flex items-center text-[11px] font-medium px-1.5 py-1 rounded-md shrink-0"
-                      style={{ gap: '4px', background: 'rgba(0,0,0,0.05)', color: '#52525b' }}
+                      className="flex items-center text-[10px] font-semibold px-1.5 py-1 rounded shrink-0"
+                      style={{ gap: '4px', background: 'rgba(184,184,184,0.12)', border: '1px solid rgba(184,184,184,0.12)', color: '#52525b' }}
                     >
                       {a.type === 'no-data' ? (
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
